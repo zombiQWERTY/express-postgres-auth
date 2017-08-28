@@ -19,7 +19,7 @@ export const gracefulExit = (...args) => {
   setTimeout(() => process.exit(1), 300);
 };
 
-const initAlways = (app, routes) => [];
+const initAlways = app => [];
 const initOnce = app => [];
 
 const resolvePath = folder => path.resolve(__dirname, '../../' + folder);

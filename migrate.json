@@ -1,5 +1,0 @@
-{
-    "migrationsDir": "./dist/src/server/db/migrations",
-    "es6": true,
-    "autosync": true
-}

@@ -1,0 +1,28 @@
+{
+  "redis": {
+    "host": "<IP addr>",
+    "port": <Integer>
+  },
+  "db": {
+    "client": "<String>",
+    "connection": {
+      "host": "<IP addr>",
+      "user": "<String>",
+      "password": "<String>",
+      "database": "<String>",
+      "charset": "utf8"
+    }
+  },
+  "sentry": {
+    "dsn": "<String<Url>>"
+  },
+  "service": {
+    "protocol": "http(s)",
+    "domain": "<String>",
+    "port": <Integer>
+  },
+  "secrets": {
+    "session": "<String>",
+    "jwt": "<String>"
+  }
+}

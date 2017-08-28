@@ -1,52 +1,37 @@
+import R from 'ramda';
 import Redis from 'ioredis';
-import redisConfig from '../../config/redis.json';
-import NODE_ENV from '../server/utils/NODE_ENV';
+import { fromEvent } from 'most';
+import config from '../../config/config.json';
+import { isProduction } from '../server/utils/NODE_ENV';
 import { genericLogger } from '../server/utils/logger';
 
-let redis;
-function events(connection) {
-    connection.on('error', error => {
-        genericLogger.verbose(`Redis error. ${error.message}`);
-    });
+export const handleRedisEvents = connection => {
+  fromEvent('error', connection)
+    .observe(error => genericLogger.verbose(`Redis error.`, error));
 
-    connection.on('close', () => {
-        genericLogger.verbose(`Redis connection lost.`);
-    });
+  fromEvent('close', connection)
+    .observe(() => genericLogger.verbose(`Redis connection lost.`));
 
-    connection.on('reconnecting', () => {
-        genericLogger.verbose(`Reconnecting to redis...`);
-    });
+  fromEvent('reconnecting', connection)
+    .observe(() => genericLogger.verbose(`Reconnecting to redis...`));
 
-    connection.on('connect', () => {
-        genericLogger.verbose(`Redis connected.`);
-        redis = connection;
-    });
+  fromEvent('ready', connection)
+    .observe(() => genericLogger.verbose(`Redis connection established.`));
 
-    connection.on('ready', () => {
-        genericLogger.verbose(`Redis connection established.`);
-    });
-}
+  fromEvent('connect', connection)
+    .observe(() => genericLogger.verbose(`Redis connected.`));
 
-function connect() {
-    let connection = new Redis({
-        port: redisConfig.port,
-        host: redisConfig.host,
-        showFriendlyErrorStack: NODE_ENV !== 'production',
-        retryStrategy(times) {
-            return Math.min(times * 50, 2000);
-        }
-    });
-
-    events(connection);
-    connection.on('end', () => {
-        connection = connect();
-    });
-    return connection;
-}
-
-export default () => {
-    redis = connect();
-    return redis;
+  fromEvent('end', connection)
+    .observe(() => genericLogger.verbose(`Redis connection lost. Reconnecting...`));
 };
 
-export { redis };
+export const createRedisConnection = () =>
+  new Redis(R.merge(config.redis, {
+    showFriendlyErrorStack: !isProduction(),
+    retryStrategy(times) {
+      return Math.min(times * 50, 2000);
+    },
+    reconnectOnError(error) {
+      return error.message.includes('READONLY');
+    }
+  }));

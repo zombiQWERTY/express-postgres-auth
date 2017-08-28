@@ -1,7 +1,13 @@
-import 'babel-polyfill';
-import StartUp from './server/manager/StartUpManager';
+import R from 'ramda';
+import Future from 'fluture';
+import importDir from 'import-dir';
+import { createLogger } from './server/utils/logger';
+import { createStructure, gracefulExit, start } from './Start';
 
-(async () => {
-    await StartUp.checkConfig();
-    new StartUp();
+(() => {
+  createStructure()
+    .chain(() => Future.of(createLogger()))
+    .chain(() => Future.of([importDir('./server/routes')]))
+    .chain(routes => Future.of(start(routes)))
+    .fork(gracefulExit, R.identity);
 })();

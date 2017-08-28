@@ -1,18 +1,13 @@
-import Redis from 'redis';
 import Warlock from 'node-redis-warlock';
 
-const warlock = new Warlock(Redis.createClient());
+export const createWarlock = Redis => new Warlock(Redis);
 
-export function executeOnce(key, callback) {
-  warlock.lock(key, 20000, function(err, unlock) {
-    if (err) {
-      return;
-    }
+export const executeOnce = (warlock, key, done) => {
+  warlock.lock(key, 20000, (err, unlock) => {
+    if (err) { return; }
 
     if (typeof unlock === 'function') {
-      setTimeout(function() {
-        callback(unlock);
-      }, 1000);
+      setTimeout(() => done(unlock), 1000);
     }
   });
-}
+};

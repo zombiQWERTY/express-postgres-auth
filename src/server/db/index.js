@@ -1,11 +1,4 @@
-import mongoose from 'mongoose';
+import knex from 'knex';
+import bookshelf from 'bookshelf';
 
-export const connectDatabase = uri => new Promise((resolve, reject) => {
-    mongoose.Promise = Promise;
-    const connection = mongoose.createConnection(uri);
-
-    connection
-        .on('error', error => reject(error))
-        .on('close', () => console.log('Database connection closed.'))
-        .once('open', () => resolve(connection));
-});
+export const db = config => bookshelf(knex(config));

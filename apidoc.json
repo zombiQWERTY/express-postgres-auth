@@ -1,0 +1,21 @@
+{
+    "name": "ApiDoc",
+    "version": "1.0.0",
+    "description": "API",
+    "title": "IQLang",
+    "url" : "https://iqlang.com",
+    "sampleUrl": "http://localhost:3000",
+    "header": {
+        "title": "Documentation",
+        "filename": "./documentation/top.md"
+    },
+    "footer": {
+        "title": "Documentation",
+        "filename": "./documentation/bottom.md"
+    },
+    "template": {
+        "forceLanguage": "en",
+        "withCompare": false,
+        "withGenerator": true
+    }
+}

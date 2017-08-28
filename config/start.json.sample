@@ -1,0 +1,5 @@
+{
+    "PROTOCOL": "(http|https)",
+    "DOMAIN": "localhost",
+    "PORT": 3000
+}

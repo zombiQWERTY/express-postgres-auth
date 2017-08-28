@@ -1,0 +1,98 @@
+{
+    "name": "iqlang",
+    "version": "1.0.0",
+    "description": "IQ lang",
+    "main": "./src/index.js",
+    "homepage": "",
+    "engines": {
+        "node": ">=8.4.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Winni-/iqlang-backend"
+    },
+    "keywords": [],
+    "bugs": {
+        "url": "https://github.com/Winni-/iqlang-backend/issues",
+        "email": "zombiqwerty@yandex.ru"
+    },
+    "author": {
+        "name": "IQLang",
+        "email": ""
+    },
+    "contributors": [
+        {
+            "name": "Pavel Zinovev",
+            "email": "zombiqwerty@yandex.ru",
+            "url": ""
+        }
+    ],
+    "license": "ISC",
+    "private": true,
+    "dependencies": {
+        "async-file": "^2.0.2",
+        "body-parser": "^1.15.2",
+        "compose-middleware": "^2.2.0",
+        "compression": "^1.6.2",
+        "connect-redis": "^3.3.0",
+        "cors": "^2.8.1",
+        "cross-env": "^3.1.4",
+        "express": "^4.14.0",
+        "express-async-wrap": "^1.0.0",
+        "express-log": "^1.0.1",
+        "express-qs-parser": "^0.0.1",
+        "gm": "^1.23.0",
+        "helmet": "^3.1.0",
+        "import-dir": "0.0.1",
+        "ioredis": "^2.5.0",
+        "json3": "^3.3.2",
+        "md5": "^2.2.1",
+        "migrate-mongoose": "^3.2.2",
+        "mkdirp": "^0.5.1",
+        "moment": "^2.17.0",
+        "mongoose": "^4.5.7",
+        "mongoose-auto-increment": "^5.0.1",
+        "mongoose-deep-populate": "^3.0.0",
+        "mongoose-fill": "^1.3.1",
+        "mongoose-hidden": "^0.7.0",
+        "mongoose-id-validator": "^0.4.0",
+        "mongoose-populate-virtuals": "^1.0.3",
+        "mongoose-validator": "^1.2.4",
+        "multer": "^1.2.1",
+        "nocache": "^2.0.0",
+        "node-delete": "^0.1.2",
+        "node-redis-warlock": "^0.2.0",
+        "nodemailer": "^2.7.0",
+        "nodemailer-smtp-transport": "^2.7.2",
+        "passport": "^0.3.2",
+        "passport-local": "^1.0.0",
+        "passport-local-mongoose": "^4.0.0",
+        "ramda": "^0.24.1",
+        "redis": "^2.7.1",
+        "winston": "^2.3.0",
+        "winston-sentry": "^0.1.5"
+    },
+    "devDependencies": {
+        "apidoc": "^0.16.1",
+        "babel-cli": "^6.6.5",
+        "babel-core": "^6.10.4",
+        "babel-plugin-transform-class-properties": "^6.24.1",
+        "babel-plugin-transform-object-rest-spread": "^6.26.0",
+        "babel-preset-env": "^1.6.0",
+        "env-test": "^1.0.0",
+        "faker": "^3.1.0",
+        "http-server": "^0.10.0",
+        "jest": "^20.0.4",
+        "jsdoc": "^3.5.3",
+        "nodemon": "^1.10.0",
+        "yargs": "^6.4.0"
+    },
+    "scripts": {
+        "start": "npm run compile && cross-env NODE_ENV=production node ./dist/src --startport=3000",
+        "startProd": "./bin/prod/start.sh",
+        "compile": "./bin/start/compile.sh",
+        "dev": "cross-env NODE_ENV=development nodemon ./src/index.js 0.0.0.0 3000 --startport=3000 --exec babel-node",
+        "apidoc": "apidoc -i ./src/server/routes -o ./doc && http-server ./doc",
+        "jsdoc": "jsdoc -c ./jsdoc.json && http-server ./jsdoc"
+    }
+}

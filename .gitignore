@@ -1,0 +1,24 @@
+node_modules/
+dist/
+distForReplace/
+coverage/
+build/
+
+.idea
+.DS_Store
+npm-debug.log
+
+apidoc/
+jsdoc/
+tmp/
+
+
+syntax: glob
+
+*.heapsnapshot
+*.log
+/public
+/log/
+
+syntax: regexp
+config/.*\.json$

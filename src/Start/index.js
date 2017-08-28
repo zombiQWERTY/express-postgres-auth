@@ -49,7 +49,7 @@ export const start = routes => {
       Future.parallel(Infinity, initOnce(app))
         .fork(gracefulExit, unlock));
 
-    Future.parallel(Infinity, initAlways(app, routes))
+    Future.parallel(Infinity, initAlways(app))
       .fork(gracefulExit, () => {
         genericLogger.verbose(`Server started on port ${URI.port}.`);
         genericLogger.verbose(`Environment: ${NODE_ENV}.`);

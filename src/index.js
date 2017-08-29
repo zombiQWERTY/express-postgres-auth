@@ -1,7 +1,7 @@
 import R from 'ramda';
 import Future from 'fluture';
 import importDir from 'import-dir';
-import { createLogger } from './server/utils/logger';
+import { createLogger } from './utils/logger';
 import { createStructure, gracefulExit, start } from './Start';
 
 (() => {

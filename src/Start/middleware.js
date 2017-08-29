@@ -14,16 +14,16 @@ const origin = ['http://localhost', 'https://iqlang.com'];
 const methods = ['OPTIONS', 'GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD'];
 
 const allowedHeaders = [
-  'X-Requested-With',
-  'If-Modified-Since',
-  'Cache-Control',
   'DNT',
-  'X-CustomHeader',
+  'Pragma',
   'Keep-Alive',
   'User-Agent',
   'Content-Type',
   'Authorization',
-  'Pragma'
+  'Cache-Control',
+  'X-CustomHeader',
+  'X-Requested-With',
+  'If-Modified-Since'
 ];
 
 export const middleware = () => compose.compose([

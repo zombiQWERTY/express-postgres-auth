@@ -1,6 +1,6 @@
 import R from 'ramda';
 import yargs from 'yargs';
-import config from '../../../config/config.json';
+import config from '../../config/config.json';
 
 export const getURI = () => R.merge(config.service, {
   startport: yargs.argv.startport

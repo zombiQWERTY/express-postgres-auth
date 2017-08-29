@@ -2,8 +2,8 @@ import R from 'ramda';
 import Redis from 'ioredis';
 import { fromEvent } from 'most';
 import config from '../../config/config.json';
-import { isProduction } from '../server/utils/NODE_ENV';
-import { genericLogger } from '../server/utils/logger';
+import { isProduction } from '../utils/NODE_ENV';
+import { genericLogger } from '../utils/logger';
 
 export const handleRedisEvents = connection => {
   fromEvent('error', connection)

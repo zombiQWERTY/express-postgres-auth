@@ -6,12 +6,12 @@ import Future from 'fluture';
 import express from 'express';
 import { fromEvent } from 'most';
 
-import { db } from '../server/db/index';
-import { NODE_ENV } from '../server/utils/NODE_ENV';
-import { genericLogger } from '../server/utils/logger';
+import { db } from '../db/index';
+import { NODE_ENV } from '../utils/NODE_ENV';
+import { genericLogger } from '../utils/logger';
+import { getURI, getBaseURI } from '../utils/baseURI';
 import { middleware, customMiddleware } from './middleware';
 import { createWarlock, executeOnce } from '../redis/Warlock';
-import { getURI, getBaseURI } from '../server/utils/baseURI';
 import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
 export const gracefulExit = (...args) => {

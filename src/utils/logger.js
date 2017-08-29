@@ -1,6 +1,6 @@
 import winston from 'winston';
 import Sentry from 'winston-sentry';
-import config from '../../../config/config.json';
+import config from '../../config/config.json';
 
 import { isProduction, NODE_ENV } from './NODE_ENV';
 
@@ -28,26 +28,26 @@ const levels = {
   },
   development: {
     generic: {
-      console: 'silly',
+      sentry: -1,
       file: 'info',
-      sentry: -1
+      console: 'silly'
     },
     memory: {
-      console: 'warn',
+      sentry: -1,
       file: 'info',
-      sentry: -1
+      console: 'warn'
     }
   },
   test: {
     generic: {
-      console: -1,
       file: -1,
-      sentry: -1
+      sentry: -1,
+      console: -1,
     },
     memory: {
-      console: -1,
       file: -1,
-      sentry: -1
+      sentry: -1,
+      console: -1,
     }
   }
 };
@@ -61,8 +61,8 @@ export const createLogger = () => {
     file: {
       json: true,
       timestamp: true,
-      level: levels[NODE_ENV].generic.file,
-      filename: './log/generic.log'
+      filename: './log/generic.log',
+      level: levels[NODE_ENV].generic.file
     },
     transports: [
       new Sentry({

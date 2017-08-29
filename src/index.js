@@ -7,7 +7,7 @@ import { createStructure, gracefulExit, start } from './Start';
 (() => {
   createStructure()
     .chain(() => Future.of(createLogger()))
-    .chain(() => Future.of([importDir('./server/routes')]))
+    .chain(() => Future.of([importDir('./routes')]))
     .chain(routes => Future.of(start(routes)))
     .fork(gracefulExit, R.identity);
 })();

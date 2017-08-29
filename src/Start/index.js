@@ -6,13 +6,14 @@ import Future from 'fluture';
 import express from 'express';
 import { fromEvent } from 'most';
 
-import { db } from '../db/index';
 import { NODE_ENV } from '../utils/NODE_ENV';
+import config from '../../config/config.json';
 import { genericLogger } from '../utils/logger';
+import { createDBConnection } from '../db/index';
 import { getURI, getBaseURI } from '../utils/baseURI';
+import { createRedisConnection } from '../redis/client';
 import { middleware, customMiddleware } from './middleware';
 import { createWarlock, executeOnce } from '../redis/Warlock';
-import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
 export const gracefulExit = (...args) => {
   genericLogger.error(...args);
@@ -34,9 +35,9 @@ export const createStructure = () => {
 };
 
 export const start = routes => {
-  const Redis = createRedisConnection();
-  const Warlock = createWarlock(Redis);
-  handleRedisEvents(Redis);
+  const Redis = createRedisConnection(config.redis);
+  createWarlock(Redis);
+  createDBConnection(config.db);
 
   const app = express();
   app.use(middleware());
@@ -45,7 +46,7 @@ export const start = routes => {
   const URI = getURI();
   const server = http.createServer(app);
   server.listen(URI.startport, () => {
-    executeOnce(Warlock, 'initAppOnce', unlock =>
+    executeOnce('initAppOnce', unlock =>
       Future.parallel(Infinity, initOnce(app))
         .fork(gracefulExit, unlock));
 

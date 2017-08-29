@@ -1,4 +1,11 @@
 import knex from 'knex';
 import bookshelf from 'bookshelf';
 
-export const db = config => bookshelf(knex(config));
+let db = null;
+export const createDBConnection = config => {
+  db = bookshelf(knex(config));
+
+  return db;
+};
+
+export { db };

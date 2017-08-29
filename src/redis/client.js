@@ -1,11 +1,10 @@
 import R from 'ramda';
-import Redis from 'ioredis';
+import IORedis from 'ioredis';
 import { fromEvent } from 'most';
-import config from '../../config/config.json';
-import { isProduction } from '../utils/NODE_ENV';
 import { genericLogger } from '../utils/logger';
+import { isProduction } from '../utils/NODE_ENV';
 
-export const handleRedisEvents = connection => {
+const handleRedisEvents = connection => {
   fromEvent('error', connection)
     .observe(error => genericLogger.verbose(`Redis error.`, error));
 
@@ -25,8 +24,9 @@ export const handleRedisEvents = connection => {
     .observe(() => genericLogger.verbose(`Redis connection lost. Reconnecting...`));
 };
 
-export const createRedisConnection = () =>
-  new Redis(R.merge(config.redis, {
+let Redis = null;
+export const createRedisConnection = config => {
+  Redis = new IORedis(R.merge(config, {
     showFriendlyErrorStack: !isProduction(),
     retryStrategy(times) {
       return Math.min(times * 50, 2000);
@@ -35,3 +35,9 @@ export const createRedisConnection = () =>
       return error.message.includes('READONLY');
     }
   }));
+
+  handleRedisEvents(Redis);
+  return Redis;
+};
+
+export { Redis };

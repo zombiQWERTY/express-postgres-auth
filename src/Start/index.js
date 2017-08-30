@@ -41,13 +41,13 @@ const HTTPEventsListener = server => {
   });
 };
 
-const success = server => {
+export const success = server => {
   genericLogger.verbose(`Server started on port ${server.address().port}.`);
   genericLogger.verbose(`Environment: ${NODE_ENV}.`);
   genericLogger.verbose(`Base URI: ${getBaseURI()}.`);
 };
 
-export const start = routes => {
+export const start = routes =>
   Future.of(createStructure())
     .chain(() => Future.of(createDBConnection(knex[NODE_ENV])))
     .chain(() => Future.of(createRedisConnection(config)))
@@ -55,6 +55,4 @@ export const start = routes => {
     .chain(app => Future.of(app.use(middleware())))
     .chain(app => Future.of(customMiddleware(app, routes)))
     .chain(app => Future.of(http.createServer(app).listen(getURI().startport)))
-    .chain(server => HTTPEventsListener(server))
-    .fork(gracefulExit, success);
-};
+    .chain(server => HTTPEventsListener(server));

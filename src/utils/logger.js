@@ -19,11 +19,6 @@ const levels = {
       console: -1,
       file: 'info',
       sentry: 'warn'
-    },
-    memory: {
-      console: -1,
-      file: 'info',
-      sentry: 'warn'
     }
   },
   development: {
@@ -31,20 +26,10 @@ const levels = {
       sentry: -1,
       file: 'info',
       console: 'silly'
-    },
-    memory: {
-      sentry: -1,
-      file: 'info',
-      console: 'warn'
     }
   },
   test: {
     generic: {
-      file: -1,
-      sentry: -1,
-      console: -1,
-    },
-    memory: {
       file: -1,
       sentry: -1,
       console: -1,
@@ -66,7 +51,7 @@ export const createLogger = () => {
     },
     transports: [
       new Sentry({
-        dsn: config.sentry,
+        dsn: config.sentry.dsn,
         patchGlobal: isProduction(),
         level: levels[NODE_ENV].generic.sentry
       })

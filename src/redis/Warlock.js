@@ -1,12 +1,9 @@
 import WarlockRedis from 'node-redis-warlock';
 
 let Warlock = null;
-export const createWarlock = Redis => {
-  Warlock = new WarlockRedis(Redis);
-  return Warlock;
+export const createWarlock = redis => {
+  Warlock = new WarlockRedis(redis);
 };
-
-export { Warlock };
 
 export const executeOnce = (key, done) => {
   Warlock.lock(key, 20000, (err, unlock) => {
@@ -17,3 +14,5 @@ export const executeOnce = (key, done) => {
     }
   });
 };
+
+export { Warlock };

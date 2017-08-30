@@ -26,7 +26,7 @@ const handleRedisEvents = connection => {
 
 let Redis = null;
 export const createRedisConnection = config => {
-  Redis = new IORedis(R.merge(config, {
+  Redis = new IORedis(R.merge(config.redis, {
     showFriendlyErrorStack: !isProduction(),
     retryStrategy(times) {
       return Math.min(times * 50, 2000);

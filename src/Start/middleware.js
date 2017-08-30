@@ -36,7 +36,7 @@ export const middleware = () => compose.compose([
   qs({})
 ]);
 
-export const customMiddleware = (app, routes) => {
+export const customMiddleware = R.curry((app, routes) => {
   app.use((req, res, next) => {
     res.setRes = setRes(req, res);
     next();
@@ -52,4 +52,6 @@ export const customMiddleware = (app, routes) => {
       detail: error.detail
     });
   });
-};
+
+  return app;
+});

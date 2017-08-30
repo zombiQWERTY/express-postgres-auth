@@ -32,6 +32,9 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "bookshelf": "^0.10.4",
+    "bookshelf-mask": "^2.0.1",
+    "bookshelf-paranoia": "^0.11.0",
+    "bookshelf-schema": "^0.3.4",
     "compose-middleware": "^2.2.0",
     "compression": "^1.6.2",
     "cors": "^2.8.1",

@@ -1,11 +1,13 @@
 import knex from 'knex';
 import bookshelf from 'bookshelf';
 
-let db = null;
+let database = null;
 export const createDBConnection = config => {
-  db = bookshelf(knex(config));
+  const db = bookshelf(knex(config));
+  db.plugin('registry');
 
-  return db;
+  database = db;
+  return database;
 };
 
-export { db };
+export { database as db };

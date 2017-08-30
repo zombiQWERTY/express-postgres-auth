@@ -3,6 +3,7 @@ import http from 'http';
 import Future from 'fluture';
 import express from 'express';
 import { fromEvent } from 'most';
+import importDir from 'import-dir';
 import knex from '../../config/knex.json';
 import config from '../../config/config.json';
 
@@ -13,11 +14,6 @@ import { createDBConnection } from '../db/index';
 import { getURI, getBaseURI } from '../utils/baseURI';
 import { createRedisConnection } from '../redis/client';
 import { middleware, customMiddleware } from './middleware';
-
-export const gracefulExit = (...args) => {
-  genericLogger.error(...args);
-  setTimeout(() => process.exit(1), 500);
-};
 
 const createStructure = () => {
   const folders = ['./log'];
@@ -41,10 +37,17 @@ const HTTPEventsListener = server => {
   });
 };
 
+export const requireRoutes = () => Future.of([importDir('../routes')]);
+
 export const success = server => {
   genericLogger.verbose(`Server started on port ${server.address().port}.`);
   genericLogger.verbose(`Environment: ${NODE_ENV}.`);
   genericLogger.verbose(`Base URI: ${getBaseURI()}.`);
+};
+
+export const gracefulExit = (...args) => {
+  genericLogger.error(...args);
+  setTimeout(() => process.exit(1), 500);
 };
 
 export const start = routes =>

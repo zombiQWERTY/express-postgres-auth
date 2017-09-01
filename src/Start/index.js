@@ -8,12 +8,13 @@ import knex from '../../config/knex.json';
 import config from '../../config/config.json';
 
 import { createFolder } from './utils';
+import { Store } from './ConnectionsStore';
 import { NODE_ENV } from '../utils/NODE_ENV';
 import { genericLogger } from '../utils/logger';
 // import { createDBConnection } from '../db/index';
 import { getURI, getBaseURI } from '../utils/baseURI';
-import { createRedisConnection } from '../redis/client';
 import { middleware, customMiddleware } from './middleware';
+import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
 const createStructure = () => {
   const folders = ['./log'];
@@ -43,6 +44,7 @@ export const success = server => {
   genericLogger.verbose(`Server started on port ${server.address().port}.`);
   genericLogger.verbose(`Environment: ${NODE_ENV}.`);
   genericLogger.verbose(`Base URI: ${getBaseURI()}.`);
+  console.log(Store.instances);
 };
 
 export const gracefulExit = (...args) => {
@@ -52,10 +54,13 @@ export const gracefulExit = (...args) => {
 
 export const start = routes =>
   Future.of(createStructure())
-    .chain(() => Future.of(createDBConnection(knex[NODE_ENV])))
-    .chain(() => Future.of(createRedisConnection(config)))
+    .chain(() => Future.of(Store.add('db', createDBConnection(knex[NODE_ENV]))))
+    .chain(() => Future.of(Store.add('redis', createRedisConnection(config))))
+    .chain(Redis => Future.of(handleRedisEvents(Redis)))
     .chain(() => Future.of(express()))
     .chain(app => Future.of(app.use(middleware())))
     .chain(app => Future.of(customMiddleware(app, routes)))
     .chain(app => Future.of(http.createServer(app).listen(getURI().startport)))
-    .chain(server => HTTPEventsListener(server));
+    .chain(app => Future.of(Store.add('app', app)))
+    .chain(server => HTTPEventsListener(server))
+    .chain(server => Future.of(Store.add('server', server)));

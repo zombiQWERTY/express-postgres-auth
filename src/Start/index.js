@@ -44,6 +44,7 @@ export const success = server => {
   genericLogger.verbose(`Server started on port ${server.address().port}.`);
   genericLogger.verbose(`Environment: ${NODE_ENV}.`);
   genericLogger.verbose(`Base URI: ${getBaseURI()}.`);
+  console.log(Store.instances);
 };
 
 export const gracefulExit = (...args) => {

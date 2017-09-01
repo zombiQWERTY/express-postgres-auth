@@ -1,6 +1,6 @@
 import R from 'ramda';
 
-class Store {
+class ConnectionsStore {
   static instances = {};
 
   static add(name, connection) {
@@ -10,16 +10,15 @@ class Store {
     if (instance) {
       return instance;
     } else {
-      this.instances = R.assocPath(path, connection, Store.instances);
+      this.instances = R.assocPath(path, connection, this.instances);
       return connection;
     }
   }
 
   static get(name) {
-    const path = R.split('.', name);
-    const lensPath = R.lensPath(path);
-    return R.view(lensPath, this.instances);
+    const path = R.compose(R.lensPath, R.split('.'));
+    return R.view(path(name), this.instances);
   }
 }
 
-export { Store };
+export { ConnectionsStore as Store };

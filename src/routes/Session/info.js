@@ -1,4 +1,3 @@
-import { User } from '../../Modules/Users/Schema';
 /**
  * @api {get} /api/session Get session info
  * @apiName SessionInfo
@@ -9,12 +8,11 @@ import { User } from '../../Modules/Users/Schema';
  * @apiError 401 Unauthorized
  */
 export default (req, res, next) => {
-  console.log(User);
-  User.fetch().then(function(user) {
-    console.log(user);
-  }).catch(function(err) {
-    console.error(err);
-  });
+  // User.fetch().then(function(user) {
+  //   console.log(user);
+  // }).catch(function(err) {
+  //   console.error(err);
+  // });
   return res.setRes.success({
     status: 200,
     data: { user: req.user }

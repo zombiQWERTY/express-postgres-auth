@@ -40,7 +40,6 @@
     "cors": "^2.8.1",
     "cross-env": "^3.1.4",
     "express": "^4.14.0",
-    "express-async-wrap": "^1.0.0",
     "express-log": "^1.0.1",
     "express-qs-parser": "^0.0.1",
     "fluture": "^7.1.2",

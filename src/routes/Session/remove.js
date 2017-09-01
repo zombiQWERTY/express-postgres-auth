@@ -1,4 +1,3 @@
-import wrap from 'express-async-wrap';
 import UserManager from '../../manager/UserManager';
 
 /**
@@ -13,9 +12,9 @@ import UserManager from '../../manager/UserManager';
  * @apiError 401 Unauthorized
  * @apiError 400 Bad Request (if no data provided or other errors)
  */
-export default wrap(async (req, res, next) => {
+export default (req, res, next) => {
     try {
-        await UserManager.logout(req);
+        UserManager.logout(req);
     } catch (error) {
         return next(error);
     }
@@ -24,4 +23,4 @@ export default wrap(async (req, res, next) => {
         status: 200,
         data: { message: 'Successful logout.' }
     });
-});
+};

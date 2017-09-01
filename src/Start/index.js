@@ -10,7 +10,7 @@ import config from '../../config/config.json';
 import { createFolder } from './utils';
 import { NODE_ENV } from '../utils/NODE_ENV';
 import { genericLogger } from '../utils/logger';
-import { createDBConnection } from '../db/index';
+// import { createDBConnection } from '../db/index';
 import { getURI, getBaseURI } from '../utils/baseURI';
 import { createRedisConnection } from '../redis/client';
 import { middleware, customMiddleware } from './middleware';

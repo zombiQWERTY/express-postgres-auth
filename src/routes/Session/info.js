@@ -1,5 +1,4 @@
-import wrap from 'express-async-wrap';
-
+import { User } from '../../Modules/Users/Schema';
 /**
  * @api {get} /api/session Get session info
  * @apiName SessionInfo
@@ -9,9 +8,15 @@ import wrap from 'express-async-wrap';
  *
  * @apiError 401 Unauthorized
  */
-export default wrap(async (req, res, next) => {
-    return res.setRes.success({
-        status: 200,
-        data: { user: req.user }
-    });
-});
+export default (req, res, next) => {
+  console.log(User);
+  User.fetch().then(function(user) {
+    console.log(user);
+  }).catch(function(err) {
+    console.error(err);
+  });
+  return res.setRes.success({
+    status: 200,
+    data: { user: req.user }
+  });
+};

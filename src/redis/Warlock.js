@@ -1,11 +1,11 @@
 import WarlockRedis from 'node-redis-warlock';
+import { Store } from '../Start/ConnectionsStore';
 
-let Warlock = null;
-export const createWarlock = redis => {
-  Warlock = new WarlockRedis(redis);
-};
+export const createWarlock = redis => new WarlockRedis(redis);
 
 export const executeOnce = (key, done) => {
+  const Warlock = Store.get('Warlock');
+
   Warlock.lock(key, 20000, (err, unlock) => {
     if (err) { return; }
 

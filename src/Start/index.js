@@ -11,7 +11,7 @@ import { createFolder } from './utils';
 import { Store } from './ConnectionsStore';
 import { NODE_ENV } from '../utils/NODE_ENV';
 import { genericLogger } from '../utils/logger';
-// import { createDBConnection } from '../db/index';
+import { createDBConnection } from '../db/index';
 import { getURI, getBaseURI } from '../utils/baseURI';
 import { middleware, customMiddleware } from './middleware';
 import { createRedisConnection, handleRedisEvents } from '../redis/client';
@@ -44,7 +44,6 @@ export const success = server => {
   genericLogger.verbose(`Server started on port ${server.address().port}.`);
   genericLogger.verbose(`Environment: ${NODE_ENV}.`);
   genericLogger.verbose(`Base URI: ${getBaseURI()}.`);
-  console.log(Store.instances);
 };
 
 export const gracefulExit = (...args) => {

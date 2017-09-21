@@ -4,7 +4,7 @@ import Future from 'fluture';
 import express from 'express';
 import { fromEvent } from 'most';
 import importDir from 'import-dir';
-import knex from '../../config/knex.json';
+import knex from '../../knex';
 import config from '../../config/config.json';
 
 import { createFolder } from './utils';
@@ -14,6 +14,7 @@ import { genericLogger } from '../utils/logger';
 import { createDBConnection } from '../db/index';
 import { getURI, getBaseURI } from '../utils/baseURI';
 import { middleware, customMiddleware } from './middleware';
+import { initialize as modulesInitialize } from '../Modules/index';
 import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
 const createStructure = () => {
@@ -56,6 +57,7 @@ export const start = routes =>
     .chain(() => Future.of(Store.add('db', createDBConnection(knex[NODE_ENV]))))
     .chain(() => Future.of(Store.add('redis', createRedisConnection(config))))
     .chain(Redis => Future.of(handleRedisEvents(Redis)))
+    .chain(() => Future.of(modulesInitialize()))
     .chain(() => Future.of(express()))
     .chain(app => Future.of(app.use(middleware())))
     .chain(app => Future.of(customMiddleware(app, routes)))

@@ -1,12 +1,10 @@
 import bookshelfMask from 'bookshelf-mask';
 import bookshelfParanoia from 'bookshelf-paranoia';
 import bookshelfSchema from 'bookshelf-schema';
-import scope from 'bookshelf-schema/lib/scopes';
 import fields from 'bookshelf-schema/lib/fields';
-import relations from 'bookshelf-schema/lib/relations';
 import { Store } from '../../Start/ConnectionsStore';
 
-(() => {
+export const createModel = () => {
   const DB = Store.get('db');
 
   DB.plugin(bookshelfMask);
@@ -21,14 +19,12 @@ import { Store } from '../../Start/ConnectionsStore';
     hidden: ['password', 'salt']
   }, {
     schema: [
+      fields.EmailField('name'),
       fields.EmailField('email'),
       fields.EncryptedStringField('password'),
-      fields.BooleanField('active'),
-      relations.HasMany('Photo'),
-      scope('isActive', function(){ return this.where({active: true}); })
+      fields.BooleanField('active')
     ]
   });
 
-  console.log(123);
-  Store.add('models.User', Model);
-})();
+  Store.add('Models.User', Model);
+};

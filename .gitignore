@@ -12,7 +12,6 @@ apidoc/
 jsdoc/
 tmp/
 
-
 syntax: glob
 
 *.heapsnapshot
@@ -22,3 +21,4 @@ syntax: glob
 
 syntax: regexp
 config/.*\.json$
+/knex.js

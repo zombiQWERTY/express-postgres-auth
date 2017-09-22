@@ -17,7 +17,7 @@ const allowedHeaders = [
   'DNT',
   'Pragma',
   'Keep-Alive',
-  'User-Agent',
+  'Account-Agent',
   'Content-Type',
   'Authorization',
   'Cache-Control',

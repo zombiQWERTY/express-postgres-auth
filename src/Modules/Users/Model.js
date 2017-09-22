@@ -1,7 +1,7 @@
 import bookshelfMask from 'bookshelf-mask';
-import bookshelfParanoia from 'bookshelf-paranoia';
 import bookshelfSchema from 'bookshelf-schema';
 import fields from 'bookshelf-schema/lib/fields';
+import bookshelfParanoia from 'bookshelf-paranoia';
 import { Store } from '../../Start/ConnectionsStore';
 
 export const createModel = () => {
@@ -26,5 +26,5 @@ export const createModel = () => {
     ]
   });
 
-  Store.add('Models.User', Model);
+  Store.add('Models.Account', Model);
 };

@@ -3,6 +3,7 @@ import IORedis from 'ioredis';
 import { fromEvent } from 'most';
 import { genericLogger } from '../utils/logger';
 import { isProduction } from '../utils/NODE_ENV';
+import { Store } from '../Start/ConnectionsStore';
 
 export const handleRedisEvents = Redis => {
   fromEvent('error', Redis)
@@ -24,7 +25,9 @@ export const handleRedisEvents = Redis => {
     .observe(() => genericLogger.verbose(`Redis connection lost. Reconnecting...`));
 };
 
-export const createRedisConnection = config => {
+export const createRedisConnection = () => {
+  const { config } = Store.get('config');
+
   return new IORedis(R.merge(config.redis, {
     showFriendlyErrorStack: !isProduction(),
     retryStrategy(times) {

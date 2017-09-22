@@ -54,8 +54,9 @@ export const gracefulExit = (...args) => {
 
 export const start = routes =>
   Future.of(createStructure())
+    .chain(() => Future.of(Store.add('config', { config, knex })))
     .chain(() => Future.of(Store.add('db', createDBConnection(knex[NODE_ENV]))))
-    .chain(() => Future.of(Store.add('redis', createRedisConnection(config))))
+    .chain(() => Future.of(Store.add('redis', createRedisConnection())))
     .chain(Redis => Future.of(handleRedisEvents(Redis)))
     .chain(() => Future.of(modulesInitialize()))
     .chain(() => Future.of(express()))

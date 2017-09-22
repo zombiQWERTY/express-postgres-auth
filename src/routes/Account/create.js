@@ -1,3 +1,5 @@
+import { create as createUser } from '../../Modules/Users/functions';
+
 /**
  * @api {put} /api/account Create new account
  * @apiName Create
@@ -12,7 +14,8 @@
  */
 
 const v1_0_0 = (req, res, next) => {
-
+  createUser(req.body)
+    .fork(next, () => res.setRes.success({ type: 'status' }));
 };
 
 export const create = {

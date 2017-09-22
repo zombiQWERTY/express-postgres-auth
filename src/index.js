@@ -5,9 +5,8 @@ import { requireRoutes, start, success, gracefulExit } from './Start';
 (() => {
   Future
     .do(function *() {
-      createLogger();
-
       const routes = requireRoutes();
+      createLogger();
       yield start(routes);
     })
     .fork(gracefulExit, success);

@@ -86,6 +86,8 @@
     "start": "npm run compile && cross-env NODE_ENV=production node ./dist/src --startport=3000",
     "startProd": "./bin/prod/start.sh",
     "compile": "./bin/start/compile.sh",
+    "migrate:up": "./node_modules/babel-cli/bin/babel-node.js ./node_modules/knex/bin/cli.js migrate:latest",
+    "migrate:down": "./node_modules/babel-cli/bin/babel-node.js ./node_modules/knex/bin/cli.js migrate:rollback",
     "dev": "cross-env NODE_ENV=development nodemon ./src/index.js 0.0.0.0 3000 --startport=3000 --exec babel-node",
     "apidoc": "apidoc -i ./src/server/routes -o ./doc && http-server ./doc",
     "jsdoc": "jsdoc -c ./jsdoc.json && http-server ./jsdoc"

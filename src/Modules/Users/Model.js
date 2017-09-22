@@ -10,21 +10,21 @@ export const createModel = () => {
   DB.plugin(bookshelfMask);
   DB.plugin('visibility');
   DB.plugin(bookshelfSchema());
-  DB.plugin(bookshelfParanoia, { sentinel: 'active' });
+  DB.plugin(bookshelfParanoia, { field: 'deletedAt', sentinel: 'active' });
 
   const Model = DB.Model.extend({
     tableName: 'users',
     softDelete: true,
-    hasTimestamps: true,
-    hidden: ['password', 'salt']
+    hasTimestamps: ['createdAt', 'updatedAt']
   }, {
     schema: [
-      fields.EmailField('name'),
-      fields.EmailField('email'),
-      fields.EncryptedStringField('password'),
-      fields.BooleanField('active')
+      fields.BooleanField('active'),
+      fields.StringField('name', { required: true, maxLength: 32 }),
+      fields.EmailField('email', { required: true, maxLength: 64 }),
+      fields.StringField('salt', { required: true }),
+      fields.StringField('password', { required: true })
     ]
   });
 
-  Store.add('Models.Account', Model);
+  Store.add('Models.User', Model);
 };

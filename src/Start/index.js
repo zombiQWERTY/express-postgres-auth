@@ -4,7 +4,7 @@ import Future from 'fluture';
 import express from 'express';
 import { fromEvent } from 'most';
 import importDir from 'import-dir';
-import knex from '../../knex';
+import knex from '../../knexfile';
 import config from '../../config/config.json';
 
 import { createFolder } from './utils';

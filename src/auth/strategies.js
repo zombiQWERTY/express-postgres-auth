@@ -1,4 +1,5 @@
 import R from 'ramda';
+import Future from 'fluture';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
@@ -34,11 +35,15 @@ export const local = () => {
     username = R.toLower(username);
 
     byField(config.usernameField, username)
-      .map(rows => rows.attributes)
+      .map(rows => R.pathOr(null, ['attributes'], rows))
       .chain(user => {
-        const { password, salt } = user;
-        const hash = hashBySalt(password, salt);
-        return hash === password ? user : false;
+        if (user) {
+          const { password, salt } = user;
+          const hash = hashBySalt(password, salt);
+          return Future.of(hash === password ? user : R.F());
+        } else {
+          return Future.of(R.F());
+        }
       })
       .fork(error => done(error, null), user => done(null, user));
   });

@@ -19,7 +19,7 @@ export const JWT = () => {
   return new JWTStrategy(extractConfig, (jwtPayload, done) => {
     const { user, type } = jwtPayload;
 
-    return type === types.ACCESS ? done(null, user) : done(null, false);
+    return done(null, type === types.ACCESS && user);
   });
 };
 
@@ -35,12 +35,13 @@ export const local = () => {
     username = R.toLower(username);
 
     byField(config.usernameField, username)
-      .map(rows => R.pathOr(null, ['attributes'], rows))
-      .chain(user => {
+      .map(rows => {
+        const user = R.pathOr(null, ['attributes'], rows);
+
         if (user) {
           const { password, salt } = user;
           const hash = hashBySalt(password, salt);
-          return Future.of(hash === password ? user : false);
+          return Future.of(hash === password && user);
         } else {
           return Future.of(false);
         }

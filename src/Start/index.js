@@ -43,8 +43,8 @@ const HTTPEventsListener = server => {
 
 export const requireRoutes = () => [importDir('../routes')];
 
-export const success = server => {
-  genericLogger.verbose(`Server started on port ${server.address().port}.`);
+export const success = () => {
+  genericLogger.verbose(`Server started on port ${getURI().port}.`);
   genericLogger.verbose(`Environment: ${NODE_ENV}.`);
   genericLogger.verbose(`Base URI: ${getBaseURI()}.`);
 };
@@ -80,6 +80,4 @@ export const start = routes => Future
     const server = http.createServer(app).listen(getURI().startport);
     yield HTTPEventsListener(server);
     Store.add('server', server);
-
-    return server;
   });

@@ -8,7 +8,7 @@ import { requireRoutes, start, success, gracefulExit } from './Start';
       createLogger();
 
       const routes = requireRoutes();
-      return yield start(routes);
+      yield start(routes);
     })
     .fork(gracefulExit, success);
 })();

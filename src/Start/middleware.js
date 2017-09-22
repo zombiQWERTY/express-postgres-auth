@@ -1,6 +1,7 @@
 import R from 'ramda';
 import cors from 'cors';
 import helmet from 'helmet';
+import passport from 'passport';
 import logger from 'express-log';
 import qs from 'express-qs-parser';
 import bodyParser from 'body-parser';
@@ -33,6 +34,7 @@ export const middleware = () => compose.compose([
   bodyParser.json({ limit: '50mb' }),
   bodyParser.urlencoded({ extended: false, limit: '50mb' }),
   cors({ origin, methods, allowedHeaders, maxAge, preflightContinue }),
+  passport.initialize(),
   qs({})
 ]);
 
@@ -42,8 +44,7 @@ export const customMiddleware = R.curry((app, routes) => {
     next();
   });
 
-  R.forEach(section =>
-    R.compose(R.forEach(name => section[name](app)), R.keys)(section), routes);
+  R.forEach(section => R.compose(R.forEach(name => section[name](app)), R.keys)(section), routes);
 
   app.use((error, req, res, next) => {
     res.setRes.fail({

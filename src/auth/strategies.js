@@ -11,7 +11,7 @@ export const JWT = () => {
   const { config } = Store.get('config');
 
   const extractConfig = {
-    jwtFromRequest: ExtractJwt.fromAuthHeader(),
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: config.secrets.jwt
   };
 
@@ -44,7 +44,8 @@ export const local = () => {
   });
 };
 
-export const init = () => {
+export const init = app => {
   passport.use('local', local());
   passport.use('jwt', JWT());
+  return app;
 };

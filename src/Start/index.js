@@ -15,6 +15,8 @@ import { createDBConnection } from '../db/index';
 import { getURI, getBaseURI } from '../utils/baseURI';
 import { middleware, customMiddleware } from './middleware';
 import { initialize as modulesInitialize } from '../Modules/index';
+import { init as initStrategiesPassport } from '../auth/strategies';
+import { init as initSerializersPassport } from '../auth/serializers';
 import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
 const createStructure = () => {
@@ -61,6 +63,8 @@ export const start = routes =>
     .chain(() => Future.of(modulesInitialize()))
     .chain(() => Future.of(express()))
     .chain(app => Future.of(app.use(middleware())))
+    .chain(app => Future.of(initStrategiesPassport(app)))
+    .chain(app => Future.of(initSerializersPassport(app)))
     .chain(app => Future.of(customMiddleware(app, routes)))
     .chain(app => Future.of(http.createServer(app).listen(getURI().startport)))
     .chain(app => Future.of(Store.add('app', app)))

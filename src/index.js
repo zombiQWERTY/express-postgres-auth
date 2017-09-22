@@ -3,8 +3,12 @@ import { createLogger } from './utils/logger';
 import { requireRoutes, start, success, gracefulExit } from './Start';
 
 (() => {
-  Future.of(createLogger())
-    .chain(() => requireRoutes())
-    .chain(routes => start(routes))
+  Future
+    .do(function *() {
+      createLogger();
+
+      const routes = requireRoutes();
+      return yield start(routes);
+    })
     .fork(gracefulExit, success);
 })();

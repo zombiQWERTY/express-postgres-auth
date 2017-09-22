@@ -40,17 +40,16 @@ export const local = () => {
         if (user) {
           const { password, salt } = user;
           const hash = hashBySalt(password, salt);
-          return Future.of(hash === password ? user : R.F());
+          return Future.of(hash === password ? user : false);
         } else {
-          return Future.of(R.F());
+          return Future.of(false);
         }
       })
       .fork(error => done(error, null), user => done(null, user));
   });
 };
 
-export const init = app => {
+export const init = () => {
   passport.use('local', local());
   passport.use('jwt', JWT());
-  return app;
 };

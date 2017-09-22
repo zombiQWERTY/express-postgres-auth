@@ -8,8 +8,7 @@ export const deserialize = (id, done) => byField('id', id)
   .map(rows => rows.attributes)
   .fork(error => done(error, null), user => done(null, user));
 
-export const init = app => {
+export const init = () => {
   passport.serializeUser(serialize);
   passport.deserializeUser(deserialize);
-  return app;
 };

@@ -41,7 +41,7 @@ const HTTPEventsListener = server => {
   });
 };
 
-export const requireRoutes = () => Future.of([importDir('../routes')]);
+export const requireRoutes = () => [importDir('../routes')];
 
 export const success = server => {
   genericLogger.verbose(`Server started on port ${server.address().port}.`);
@@ -54,19 +54,32 @@ export const gracefulExit = (...args) => {
   setTimeout(() => process.exit(1), 500);
 };
 
-export const start = routes =>
-  Future.of(createStructure())
-    .chain(() => Future.of(Store.add('config', { config, knex })))
-    .chain(() => Future.of(Store.add('db', createDBConnection(knex[NODE_ENV]))))
-    .chain(() => Future.of(Store.add('redis', createRedisConnection())))
-    .chain(Redis => Future.of(handleRedisEvents(Redis)))
-    .chain(() => Future.of(modulesInitialize()))
-    .chain(() => Future.of(express()))
-    .chain(app => Future.of(app.use(middleware())))
-    .chain(app => Future.of(initStrategiesPassport(app)))
-    .chain(app => Future.of(initSerializersPassport(app)))
-    .chain(app => Future.of(customMiddleware(app, routes)))
-    .chain(app => Future.of(http.createServer(app).listen(getURI().startport)))
-    .chain(app => Future.of(Store.add('app', app)))
-    .chain(server => HTTPEventsListener(server))
-    .chain(server => Future.of(Store.add('server', server)));
+export const start = routes => Future
+  .do(function *() {
+    Store.add('config', { config, knex });
+
+    yield createStructure();
+    const db = yield Future.of(createDBConnection(knex[NODE_ENV]));
+    Store.add('db', db);
+
+    const Redis = yield Future.of(createRedisConnection());
+    handleRedisEvents(Redis);
+    Store.add('redis', Redis);
+
+    modulesInitialize();
+
+    const app = express();
+    app.use(middleware());
+
+    initStrategiesPassport();
+    initSerializersPassport();
+
+    customMiddleware(app, routes);
+    Store.add('app', app);
+
+    const server = http.createServer(app).listen(getURI().startport);
+    yield HTTPEventsListener(server);
+    Store.add('server', server);
+
+    return server;
+  });

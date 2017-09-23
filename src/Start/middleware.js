@@ -48,8 +48,8 @@ export const customMiddleware = R.curry((app, routes) => {
 
   app.use((error, req, res, next) => {
     res.setRes.fail({
+      type: error.type,
       message: error.message,
-      status: error.status || 500,
       detail: error.detail
     });
   });

@@ -15,7 +15,7 @@ import { create as createUser } from '../../Modules/Users/functions';
 
 const v1_0_0 = (req, res, next) => {
   createUser(req.body)
-    .fork(next, () => res.setRes.success({ type: 'status' }));
+    .fork(next, res.setRes.success);
 };
 
 export const create = {

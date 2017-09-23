@@ -16,14 +16,16 @@ const render = (res, json) => {
 const success = (req, res) => (params = {}) =>
   render(res, R.merge({
     status: 200,
+    payload: {},
     type: 'json',
-    payload: {}
+    success: true
   }, params));
 
 const fail = (req, res) => (params = {}) =>
   render(res, R.merge({
-    status: 500,
-    type: 'json'
+    status: 200,
+    type: 'json',
+    success: false
   }, params));
 
 export const setRes = (req, res) => ({

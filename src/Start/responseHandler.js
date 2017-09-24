@@ -1,34 +1,18 @@
 import R from 'ramda';
 
-const render = (res, json) => {
-  const renderStatus = () => res.sendStatus(json.status);
-  const renderJSON = () => res.status(json.status).send(R.omit(['status', 'type'], json));
-
-  switch (json.type) {
-    case 'status':
-      return renderStatus();
-
-    default:
-      return renderJSON();
+const render = ({ res, type, status, json }) => {
+  if (type === 'status') {
+    return res.sendStatus(status);
+  } else {
+    return res.status(status).send(json);
   }
 };
 
-const success = (req, res) => (params = {}) =>
-  render(res, R.merge({
-    status: 200,
-    payload: {},
-    type: 'json',
-    success: true
-  }, params));
+export const setResponse = (req, res) => payload => {
+  const type = payload.type || 'json';
+  const status = payload.status || 200;
 
-const fail = (req, res) => (params = {}) =>
-  render(res, R.merge({
-    status: 200,
-    type: 'json',
-    success: false
-  }, params));
-
-export const setRes = (req, res) => ({
-  success: success(req, res),
-  fail: fail(req, res)
-});
+  const success = R.pathOr(R.not(payload instanceof Error), ['success'], payload);
+  const json = { payload: R.omit(['type', 'status', 'success'], payload), success };
+  return render({ res, type, status, json });
+};

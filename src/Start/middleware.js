@@ -7,7 +7,7 @@ import qs from 'express-qs-parser';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import compose from 'compose-middleware';
-import { setRes } from './responseHandler';
+import { setResponse } from './responseHandler';
 
 const maxAge = 1200;
 const preflightContinue = true;
@@ -40,18 +40,14 @@ export const middleware = () => compose.compose([
 
 export const customMiddleware = R.curry((app, routes) => {
   app.use((req, res, next) => {
-    res.setRes = setRes(req, res);
+    res.setRes = setResponse(req, res);
     next();
   });
 
   R.forEach(section => R.compose(R.forEach(name => section[name](app)), R.keys)(section), routes);
 
-  app.use((error, req, res, next) => {
-    res.setRes.fail({
-      type: error.type,
-      message: error.message,
-      detail: error.detail
-    });
+  app.use((payload, req, res, next) => {
+    res.setRes(R.merge(payload, { success: false }));
   });
 
   return app;

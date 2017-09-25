@@ -9,10 +9,19 @@ const render = ({ res, type, status, json }) => {
 };
 
 export const setResponse = (req, res) => payload => {
-  const type = payload.type || 'json';
-  const status = payload.status || 200;
+  if (payload instanceof Error) {
+    const type = 'json';
+    const status = 200;
+    const success = false;
 
-  const success = R.pathOr(R.not(payload instanceof Error), ['success'], payload);
-  const json = { payload: R.omit(['type', 'status', 'success'], payload), success };
-  return render({ res, type, status, json });
+    const json = { payload, success };
+    return render({ res, type, status, json });
+  } else {
+    const type = payload.type || 'json';
+    const status = payload.status || 200;
+    const success = R.pathOr(true, ['success'], payload);
+
+    const json = { payload: R.omit(['type', 'status', 'success'], payload), success };
+    return render({ res, type, status, json });
+  }
 };

@@ -39,7 +39,6 @@
     "compression": "^1.6.2",
     "cors": "^2.8.1",
     "cross-env": "^3.1.4",
-    "error": "^7.0.2",
     "express": "^4.14.0",
     "express-log": "^1.0.1",
     "express-qs-parser": "^0.0.1",

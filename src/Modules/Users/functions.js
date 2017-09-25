@@ -1,20 +1,18 @@
 import R from 'ramda';
 import Future, { node } from 'fluture';
-import ValidationError from 'error/validation';
+import { ValidationError } from '../../utils/errors';
 import { byField } from './getters';
 import { Store } from '../../Start/ConnectionsStore';
 import { generateSaltenHash } from '../Hashes/functions';
 
 export const validateEmailUniqueness = email => byField('email', email)
   .chain(user => {
-    const error = ValidationError([
-      {
-        email: {
-          errors: ['Email already exists.'],
-          detail: email
-        }
+    const error = ValidationError({
+      email: {
+        errors: ['Email already exists.'],
+        detail: email
       }
-    ]);
+    });
 
     return user ? Future.reject(error) : Future.of(email);
   });

@@ -1,4 +1,6 @@
+import R from 'ramda';
 import { pbkdf2 } from '../src/Modules/Hashes/consts';
+import { accountLevel } from '../src/Modules/Users/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema
@@ -14,7 +16,7 @@ exports.up = function(knex, Promise) {
       table.string('lastname').notNullable();
       table.string('email').unique().notNullable();
       table.string('password', pbkdf2.keylen * 2).notNullable();
-      table.enum('accountLevel', ['beginner', 'medium', 'advanced']);
+      table.enum('accountLevel', R.keys(accountLevel.toJSON()));
     });
 };
 

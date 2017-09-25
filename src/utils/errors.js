@@ -1,29 +1,46 @@
-export const IOError = (cause, prefix) => {
-  const error = new Error(prefix + ': ' + cause.message);
+import R from 'ramda';
 
-  error.cause = cause;
-  error.name = 'IOError';
-  error.type = 'error.IOError';
+export class ApplicationError extends Error {
+  constructor(...arg) {
+    super(...arg);
+  }
+}
 
-  return error;
-};
+export class IOError extends ApplicationError {
+  constructor(cause, prefix) {
+    super(prefix + ': ' + cause.message);
+    this.cause = cause;
+    this.name = 'IOError';
+    this.type = 'IOError';
+  }
+}
 
-export const OptionError = (message, options = null) => {
-  const error = new Error(message);
+export class OptionError extends ApplicationError {
+  constructor(message, options = null) {
+    super(message);
+    this.option = options;
+    this.name = 'OptionError';
+    this.type = 'OptionError';
+  }
+}
 
-  error.option = options;
-  error.name = 'OptionError';
-  error.type = 'error.OptionError';
+export class ValidationError extends ApplicationError {
+  constructor(errors) {
+    super(`${R.length(R.keys)} invalid values`);
+    this.errors = errors;
+    this.name = 'ValidationError';
+    this.type = 'ValidationError';
+  }
+}
 
-  return error;
-};
+export class WrapError extends ApplicationError {
+  constructor(type, cause) {
+    super(cause.message);
+    this.name = type;
+    this.type = type;
+    this.errors = cause.errors;
+    this.originalMessage = cause.message;
+  }
+}
 
-export const ValidationError = errors => {
-  const error = new Error('ValidationError');
-
-  error.errors = errors;
-  error.name = 'ValidationError';
-  error.type = 'error.ValidationError';
-
-  return error;
-};
+export const isApplicationError = error => error instanceof  ApplicationError;

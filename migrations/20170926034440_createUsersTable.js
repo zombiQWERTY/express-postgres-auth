@@ -9,7 +9,7 @@ exports.up = function(knex, Promise) {
       table.dateTime('updatedAt');
       table.increments('id').primary();
       table.string('salt').notNullable();
-      table.integer('userCard_id').unique().references('userCard.id');
+      table.integer('userCard_id').unique().references('userCards.id');
       table.string('password', pbkdf2.keylen * 2).notNullable();
     });
 };

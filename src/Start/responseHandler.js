@@ -9,6 +9,7 @@ const render = ({ res, type, status, json }) => {
 };
 
 export const setResponse = (req, res) => payload => {
+  console.log(payload);
   if (payload instanceof Error) {
     const type = 'json';
     const status = 200;

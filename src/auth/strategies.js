@@ -41,8 +41,7 @@ export const local = () => {
         return hashBySalt(plainPassword, salt)
           .chain(hash => hash === password ? Future.of(model) : Future.reject(false));
       })
-      // .map(model => model.toJSON())
-      // .map(R.omit(['credentials']))
+      .map(model => model.toJSON())
       .fork(error => done(error, null), model => done(null, model)));
 };
 

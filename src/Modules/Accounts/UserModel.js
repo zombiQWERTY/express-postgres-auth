@@ -18,7 +18,7 @@ export const createModel = () => {
     softDelete: true,
     hasTimestamps: ['createdAt', 'updatedAt'],
     userCard_id: function () {
-      return this.hasOne(UserCard);
+      return this.belongsTo(UserCard);
     }
   }, {
     schema: [

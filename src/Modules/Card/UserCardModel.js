@@ -17,12 +17,14 @@ export const createModel = () => {
     tableName: 'userCards',
     softDelete: true,
     hasTimestamps: ['createdAt', 'updatedAt'],
+    hidden: ['credentials', 'deletedAt', 'createdAt', 'updatedAt'],
     credentials: function () {
       return this.hasOne(User);
     }
   }, {
     schema: [
       fields.BooleanField('active'),
+      fields.IntField('credentials'),
       fields.StringField('phone', { required: true }),
       fields.StringField('accountLevel', { required: true }),
       fields.EmailField('email', { required: true, maxLength: 64 }),

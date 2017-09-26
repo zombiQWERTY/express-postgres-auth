@@ -29,9 +29,7 @@ export const create = data => {
 
   const saveAccount = R.curry((saltenHash, t, { attributes }) => {
     const accountData = R.merge({ userCard_id: attributes.id }, saltenHash);
-
-    return new Account(accountData)
-      .save(null, { transacting: t });
+    return new Account(accountData).save(null, { transacting: t });
   });
 
   const saveCard = t => {
@@ -40,14 +38,10 @@ export const create = data => {
       R.merge({ accountLevel })
     );
 
-    return new Card(cardData(data))
-      .save(null, { transacting: t });
+    return new Card(cardData(data)).save(null, { transacting: t });
   };
 
-  const saveProfile = R.curry((saltenHash, t) => {
-    return saveCard(t).tap(saveAccount(saltenHash, t));
-  });
-
+  const saveProfile = R.curry((saltenHash, t) => saveCard(t).tap(saveAccount(saltenHash, t)));
   const transaction = R.compose(Card.transaction, saveProfile);
 
   return validateEmailUniqueness(Card, data.email)

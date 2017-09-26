@@ -11,7 +11,7 @@
  */
 
 const v1_0_0 = (req, res, next) => {
-
+  res.setRes(req.user);
 };
 
 export const regenerate = {

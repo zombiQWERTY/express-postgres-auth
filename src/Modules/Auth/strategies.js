@@ -17,9 +17,8 @@ export const JWT = () => {
   };
 
   return new JWTStrategy(extractConfig, (jwtPayload, done) => {
-    const { user, type } = jwtPayload;
-
-    return done(null, tokenType.access.is(type) && user);
+    const { data, type } = jwtPayload;
+    return done(null, tokenType.access.is(type) && data);
   });
 };
 

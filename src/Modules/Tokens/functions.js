@@ -11,7 +11,7 @@ const sign = (data, timeout) => {
   const options = { expiresIn: generateExpiration(timeout, 'd') };
 
   return Future.of(jwt.sign(data, secret, options))
-    .map(token => `JWT ${token}`);
+    .map(token => `Bearer ${token}`);
 };
 
 export const generateToken = (data, type) => sign({ data, type }, tokenType[type].value).map(token => ({ token }));

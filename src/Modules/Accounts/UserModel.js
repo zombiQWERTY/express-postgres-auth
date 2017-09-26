@@ -14,7 +14,7 @@ export const createModel = () => {
   DB.plugin(bookshelfParanoia, { field: 'deletedAt', sentinel: 'active' });
 
   const Model = DB.Model.extend({
-    tableName: 'user',
+    tableName: 'users',
     softDelete: true,
     hasTimestamps: ['createdAt', 'updatedAt'],
     userCard_id: function () {

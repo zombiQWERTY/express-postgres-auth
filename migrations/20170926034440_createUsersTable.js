@@ -2,7 +2,7 @@ import { pbkdf2 } from '../src/Modules/Hashes/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema
-    .createTable('user', function(table) {
+    .createTable('users', function(table) {
       table.boolean('active');
       table.dateTime('deletedAt');
       table.dateTime('createdAt');
@@ -16,5 +16,5 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
   return knex.schema
-    .dropTable('user');
+    .dropTable('users');
 };

@@ -3,7 +3,7 @@ import { userAccountLevel } from '../src/Modules/Card/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema
-    .createTable('userCard', function(table) {
+    .createTable('userCards', function(table) {
       table.boolean('active');
       table.dateTime('deletedAt');
       table.dateTime('createdAt');
@@ -19,5 +19,5 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
   return knex.schema
-    .dropTable('userCard');
+    .dropTable('userCards');
 };

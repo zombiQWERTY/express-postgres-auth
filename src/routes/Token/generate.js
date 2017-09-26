@@ -12,7 +12,7 @@
  */
 
 const v1_0_0 = (req, res, next) => {
-
+  console.log(req.user);
 };
 
 export const generate = {

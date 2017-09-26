@@ -46,9 +46,6 @@ export const customMiddleware = R.curry((app, routes) => {
 
   R.forEach(section => R.compose(R.forEach(name => section[name](app)), R.keys)(section), routes);
 
-  app.use((payload, req, res, next) => {
-    res.setRes(R.merge(payload, { success: false }));
-  });
-
+  app.use((payload, req, res, next) => res.setRes(payload));
   return app;
 });

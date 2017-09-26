@@ -16,7 +16,6 @@ import { getURI, getBaseURI } from '../utils/baseURI';
 import { middleware, customMiddleware } from './middleware';
 import { initialize as modulesInitialize } from '../Modules/index';
 import { init as initStrategiesPassport } from '../auth/strategies';
-import { init as initSerializersPassport } from '../auth/serializers';
 import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
 const createStructure = () => {
@@ -72,7 +71,6 @@ export const start = routes => Future
     app.use(middleware());
 
     initStrategiesPassport();
-    initSerializersPassport();
 
     customMiddleware(app, routes);
     Store.add('app', app);

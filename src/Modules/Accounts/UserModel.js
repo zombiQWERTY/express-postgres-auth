@@ -6,6 +6,7 @@ import { Store } from '../../Start/ConnectionsStore';
 
 export const createModel = () => {
   const DB = Store.get('db');
+  const UserCard = Store.get('Models.Card.User');
 
   DB.plugin(bookshelfMask);
   DB.plugin('visibility');
@@ -13,19 +14,18 @@ export const createModel = () => {
   DB.plugin(bookshelfParanoia, { field: 'deletedAt', sentinel: 'active' });
 
   const Model = DB.Model.extend({
-    tableName: 'users',
+    tableName: 'user',
     softDelete: true,
-    hasTimestamps: ['createdAt', 'updatedAt']
+    hasTimestamps: ['createdAt', 'updatedAt'],
+    userCard_id: function () {
+      return this.hasOne(UserCard);
+    }
   }, {
     schema: [
       fields.BooleanField('active'),
+      fields.IntField('userCard_id', { required: true }),
       fields.StringField('salt', { required: true }),
-      fields.StringField('phone', { required: true }),
       fields.StringField('password', { required: true }),
-      fields.StringField('accountLevel', { required: true }),
-      fields.EmailField('email', { required: true, maxLength: 64 }),
-      fields.StringField('name', { required: true, maxLength: 32 }),
-      fields.StringField('lastname', { required: true, maxLength: 32 })
     ]
   });
 

@@ -1,4 +1,4 @@
-import { create as createUser } from '../../Modules/Users/functions';
+import { create as createUser } from '../../Modules/Accounts/functions';
 
 /**
  * @api {put} /api/account Create new account

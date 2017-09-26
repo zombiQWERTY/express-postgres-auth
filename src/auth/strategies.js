@@ -3,10 +3,10 @@ import Future from 'fluture';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
-import { types } from '../Modules/Tokens/consts';
 import { Store } from '../Start/ConnectionsStore';
-import { byField } from '../Modules/Users/getters';
+import { tokenType } from '../Modules/Tokens/consts';
 import { hashBySalt } from '../Modules/Hashes/functions';
+import { fetchAccount } from '../Modules/Accounts/getters';
 
 export const JWT = () => {
   const { config } = Store.get('config');
@@ -19,7 +19,7 @@ export const JWT = () => {
   return new JWTStrategy(extractConfig, (jwtPayload, done) => {
     const { user, type } = jwtPayload;
 
-    return done(null, type === types.ACCESS && user);
+    return done(null, tokenType.access.is(type) && user);
   });
 };
 
@@ -31,23 +31,19 @@ export const local = () => {
     passwordField: 'password'
   };
 
-  return new LocalStrategy(config, (req, username, password, done) => {
-    username = R.toLower(username);
+  const Card = Store.get('Models.Card.User');
 
-    byField(config.usernameField, username)
-      .map(rows => {
-        const user = R.pathOr(null, ['attributes'], rows);
-
-        if (user) {
-          const { password, salt } = user;
-          const hash = hashBySalt(password, salt);
-          return Future.of(hash === password && user);
-        } else {
-          return Future.of(false);
-        }
+  return new LocalStrategy(config, (req, username, plainPassword, done) =>
+    fetchAccount(Card, config.usernameField, R.toLower(username))
+      .chain(model => model ? Future.of(model) : Future.reject(false))
+      .chain(model => {
+        const { password, salt } = model.related('credentials');
+        return hashBySalt(plainPassword, salt)
+          .chain(hash => hash === password ? Future.of(model) : Future.reject(false));
       })
-      .fork(error => done(error, null), user => done(null, user));
-  });
+      // .map(model => model.toJSON())
+      // .map(R.omit(['credentials']))
+      .fork(error => done(error, null), model => done(null, model)));
 };
 
 export const init = () => {

@@ -14,7 +14,7 @@ export const setResponse = (req, res) => payload => {
     const status = 200;
     const success = false;
 
-    const json = { payload, success };
+    const json = { payload: R.omit(['type'], payload), success };
     return render({ res, type, status, json });
   } else {
     const type = payload.type || 'json';

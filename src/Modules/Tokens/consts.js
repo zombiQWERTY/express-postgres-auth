@@ -1,3 +1,3 @@
-export const types = {
-  ACCESS: 'ACCESS'
-};
+import Enum from 'enum';
+
+export const tokenType = new Enum(['access']);

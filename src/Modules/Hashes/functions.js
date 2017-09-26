@@ -2,9 +2,9 @@ import crypto from 'crypto';
 import Future from 'fluture';
 import { pbkdf2 } from './consts';
 
-export const hashBySalt = (password, salt) => Future((reject, resolve) => {
+export const hashBySalt = (plain, salt) => Future((reject, resolve) => {
   const { iterations, keylen, digestAlgorithm, encoding } = pbkdf2;
-  crypto.pbkdf2(password, salt, iterations, keylen, digestAlgorithm, (error, raw) => {
+  crypto.pbkdf2(plain, salt, iterations, keylen, digestAlgorithm, (error, raw) => {
     if (error) { return reject(error); }
 
     const hash = new Buffer(raw, 'binary').toString(encoding);
@@ -12,12 +12,17 @@ export const hashBySalt = (password, salt) => Future((reject, resolve) => {
   });
 });
 
-export const generateSaltenHash = plain => Future((reject, resolve) => {
+export const generateSaltenHash = plain => generateSalt(plain)
+  .chain(salt =>
+    hashBySalt(plain, salt)
+      .map(hash => ({ hash, salt }))
+  );
+
+export const generateSalt = plain => Future((reject, resolve) => {
   const { salten, encoding } = pbkdf2;
   crypto.randomBytes(salten, (error, raw) => {
     if (error) { return reject(error); }
 
-    const salt = raw.toString(encoding);
-    hashBySalt(plain, salt).fork(reject, password => resolve({ password, salt }));
+    resolve(raw.toString(encoding));
   });
 });

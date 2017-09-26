@@ -17,13 +17,13 @@ export const createModel = () => {
     tableName: 'teachers',
     softDelete: true,
     hasTimestamps: ['createdAt', 'updatedAt'],
-    card: function () {
+    teacherCard_id: function () {
       return this.hasOne(TeacherCard);
     }
   }, {
     schema: [
       fields.BooleanField('active'),
-      fields.IntField('card', { required: true }),
+      fields.IntField('teacherCard_id', { required: true }),
       fields.StringField('salt', { required: true }),
       fields.StringField('password', { required: true }),
     ]

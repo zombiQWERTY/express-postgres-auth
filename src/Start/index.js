@@ -15,7 +15,7 @@ import { createDBConnection } from '../db/index';
 import { getURI, getBaseURI } from '../utils/baseURI';
 import { middleware, customMiddleware } from './middleware';
 import { initialize as modulesInitialize } from '../Modules/index';
-import { init as initStrategiesPassport } from '../auth/strategies';
+import { init as initStrategiesPassport } from '../Modules/Auth/strategies';
 import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
 const createStructure = () => {

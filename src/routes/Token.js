@@ -1,7 +1,7 @@
 import express from 'express';
 import routesVersioning from 'express-routes-versioning';
 
-import { authorize } from '../auth';
+import { authorize } from '../Modules/Auth';
 import { generate } from './Token/generate';
 import { regenerate } from './Token/regenerate';
 

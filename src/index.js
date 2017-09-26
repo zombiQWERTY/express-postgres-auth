@@ -4,10 +4,8 @@ import { requireRoutes, start, success, gracefulExit } from './Start';
 
 (() => {
   Future
-    .do(function *() {
-      const routes = requireRoutes();
-      createLogger();
-      yield start(routes);
-    })
+    .of(createLogger())
+    .map(requireRoutes)
+    .chain(start)
     .fork(gracefulExit, success);
 })();

@@ -3,10 +3,10 @@ import Future from 'fluture';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
-import { Store } from '../Start/ConnectionsStore';
-import { tokenType } from '../Modules/Tokens/consts';
-import { hashBySalt } from '../Modules/Hashes/functions';
-import { fetchAccount } from '../Modules/Accounts/getters';
+import { tokenType } from '../Tokens/consts';
+import { hashBySalt } from '../Hashes/functions';
+import { fetchAccount } from '../Accounts/getters';
+import { Store } from '../../Start/ConnectionsStore';
 
 export const JWT = () => {
   const { config } = Store.get('config');

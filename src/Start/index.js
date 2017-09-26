@@ -61,9 +61,9 @@ export const start = routes => Future
     const db = yield Future.of(createDBConnection(knex[NODE_ENV]));
     Store.add('db', db);
 
-    const Redis = yield Future.of(createRedisConnection());
-    handleRedisEvents(Redis);
-    Store.add('redis', Redis);
+    // const Redis = yield Future.of(createRedisConnection());
+    // handleRedisEvents(Redis);
+    // Store.add('redis', Redis);
 
     modulesInitialize();
 

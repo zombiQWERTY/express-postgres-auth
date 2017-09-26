@@ -4,7 +4,6 @@ import { pbkdf2 } from './consts';
 
 export const hashBySalt = (plain, salt) => Future((reject, resolve) => {
   const { iterations, keylen, digestAlgorithm, encoding } = pbkdf2;
-  console.log(salt);
   crypto.pbkdf2(plain, salt, iterations, keylen, digestAlgorithm, (error, raw) => {
     if (error) { return reject(error); }
 

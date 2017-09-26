@@ -1,4 +1,4 @@
-import { generateToken } from '../../Modules/Tokens/functions';
+import { generateTokenPair } from '../../Modules/Tokens/functions';
 
 /**
  * @api {put} /api/token Generate tokens pair by email and password
@@ -14,8 +14,7 @@ import { generateToken } from '../../Modules/Tokens/functions';
  */
 
 const v1_0_0 = (req, res, next) => {
-  generateToken(req.user, 'access')
-    .map(data => ({ data, user: req.user }))
+  generateTokenPair({ id: req.user.id })
     .fork(next, res.setRes);
 };
 

@@ -16,7 +16,7 @@ import { getURI, getBaseURI } from '../utils/baseURI';
 import { middleware, customMiddleware } from './middleware';
 import { initialize as modulesInitialize } from '../Modules/index';
 import { init as initStrategiesPassport } from '../Modules/Auth/strategies';
-import { createRedisConnection, handleRedisEvents } from '../redis/client';
+// import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
 const createStructure = () => {
   const folders = ['./log'];

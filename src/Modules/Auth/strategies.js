@@ -5,11 +5,13 @@ import LocalStrategy from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import { tokenType } from '../Tokens/consts';
 import { hashBySalt } from '../Hashes/functions';
+import { fetchByField } from '../Cards/functions';
 import { fetchAccount } from '../Accounts/getters';
 import { Store } from '../../Start/ConnectionsStore';
 
 export const JWT = () => {
   const { config } = Store.get('config');
+  const Card = Store.get('Models.Cards.User');
 
   const extractConfig = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,7 +20,11 @@ export const JWT = () => {
 
   return new JWTStrategy(extractConfig, (jwtPayload, done) => {
     const { data, type } = jwtPayload;
-    return done(null, tokenType.access.is(type) && data);
+    if (data.id && tokenType.access.is(type)) {
+      fetchByField(Card, 'id', data.id)
+        .map(user => user.toJSON())
+        .fork(error => done(error, false), user => done(null, user));
+    }
   });
 };
 
@@ -30,7 +36,7 @@ export const local = () => {
     passwordField: 'password'
   };
 
-  const Card = Store.get('Models.Card.User');
+  const Card = Store.get('Models.Cards.User');
 
   return new LocalStrategy(config, (req, username, plainPassword, done) =>
     fetchAccount(Card, config.usernameField, R.toLower(username))

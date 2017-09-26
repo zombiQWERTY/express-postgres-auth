@@ -1,5 +1,5 @@
 import R from 'ramda';
-import { userAccountLevel } from '../src/Modules/Card/consts';
+import { userAccountLevel } from '../src/Modules/Cards/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema

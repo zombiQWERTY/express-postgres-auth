@@ -1,6 +1,6 @@
 import R from 'ramda';
 import Future, { node } from 'fluture';
-import { userAccountLevel } from '../Card/consts';
+import { userAccountLevel } from '../Cards/consts';
 import { Store } from '../../Start/ConnectionsStore';
 import { generateSaltenHash } from '../Hashes/functions';
 import { ValidationError, WrapError } from '../../utils/errors';
@@ -23,7 +23,7 @@ const validateEmailUniqueness = R.curry((Model, email) => {
 
 export const create = data => {
   const Account = Store.get('Models.User');
-  const Card = Store.get('Models.Card.User');
+  const Card = Store.get('Models.Cards.User');
 
   const accountLevel = userAccountLevel.get('beginner').key;
 

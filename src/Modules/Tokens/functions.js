@@ -19,7 +19,8 @@ const signAccessToken = data => {
   const payload = R.merge({ data }, { type: tokenType.access.key });
 
   return Future.of(jwt.sign(payload, secret, options))
-    .map(accessToken => createSignature('Bearer', expiresIn, { accessToken }));
+    .map(accessToken =>
+      createSignature('Bearer', expiresIn, { accessToken }));
 };
 
 const signRefreshToken = data => {

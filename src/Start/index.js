@@ -24,8 +24,8 @@ const createStructure = () => {
   return Future.parallel(Infinity, futures);
 };
 
-const HTTPEventsListener = server => {
-  return Future((reject, resolve) => {
+const HTTPEventsListener = server =>
+  Future((reject, resolve) => {
     fromEvent('error', server)
       .observe(({ code, syscall, message }) => {
         if (syscall !== 'listen') { return reject('Error on start up.', message); }
@@ -38,7 +38,6 @@ const HTTPEventsListener = server => {
     fromEvent('listening', server)
       .observe(() => resolve(server));
   });
-};
 
 export const requireRoutes = () => [importDir('../routes')];
 

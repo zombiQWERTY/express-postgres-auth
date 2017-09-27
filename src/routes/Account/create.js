@@ -13,11 +13,10 @@ import { create as createUser } from '../../Modules/Accounts/functions';
  * @apiVersion 1.0.0
  */
 
-const v1_0_0 = (req, res, next) => {
+const v1_0_0 = (req, res, next) =>
   createUser(req.body)
     .map(user => ({ user }))
     .fork(next, res.setRes);
-};
 
 export const create = {
   '1.0.0': v1_0_0

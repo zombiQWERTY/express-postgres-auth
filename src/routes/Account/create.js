@@ -5,9 +5,11 @@ import { create as createUser } from '../../Modules/Accounts/functions';
  * @apiName Create
  * @apiGroup Account
  *
- * @apiParam {String} name User name
- * @apiParam {String} email User email
- * @apiParam {String} password User password
+ * @apiParam {String} name User's name
+ * @apiParam {String} phone User's phone
+ * @apiParam {String} email User's email
+ * @apiParam {String} password User's password
+ * @apiParam {String} lastname User's last name
 
  * @apiSuccess 200 Success
  * @apiVersion 1.0.0

@@ -10,11 +10,12 @@ import { create as createUser } from '../../Modules/Accounts/functions';
  * @apiParam {String} password User password
 
  * @apiSuccess 200 Success
- * @apiError 401 Unauthorized
+ * @apiVersion 1.0.0
  */
 
 const v1_0_0 = (req, res, next) => {
   createUser(req.body)
+    .map(user => ({ user }))
     .fork(next, res.setRes);
 };
 

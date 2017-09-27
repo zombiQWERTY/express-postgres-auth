@@ -1,16 +1,16 @@
 import express from 'express';
-import routesVersioning from 'express-routes-versioning';
+import routesVersifying from 'express-routes-versioning';
 
-import { authorize, authenticate } from '../Modules/Auth';
+import { authorize } from '../Modules/Auth';
 import { generate } from './Token/generate';
 import { regenerate } from './Token/regenerate';
 
 export default app => {
   const router = express.Router();
-  const versions = routesVersioning();
+  const versions = routesVersifying();
 
   router.put('/', authorize(), versions(generate));
-  router.patch('/', authenticate(), versions(regenerate));
+  router.patch('/', versions(regenerate));
 
   app.use(`/api/token`, router);
 };

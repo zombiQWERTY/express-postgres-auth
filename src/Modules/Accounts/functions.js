@@ -3,10 +3,9 @@ import Future, { node } from 'fluture';
 import { userAccountLevel } from '../Cards/consts';
 import { Store } from '../../Start/ConnectionsStore';
 import { generateSaltenHash } from '../Hashes/functions';
-import { ValidationError, WrapError } from '../../utils/errors';
+import { ValidationError, manipulateError } from '../../utils/errors';
 
 const findModel = Model => (field, value) => node(done => Model.where(field, value).fetch().asCallback(done));
-const manipulateError = error => Future.reject(new WrapError('ValidationError', error));
 
 const validateEmailUniqueness = R.curry((Model, email) => {
   const findBy = findModel(Model);
@@ -47,6 +46,7 @@ export const create = data => {
   return validateEmailUniqueness(Card, data.email)
     .chain(() => generateSaltenHash(data.password))
     .map(({ hash, salt }) => ({ password: hash, salt }))
-    .chain(saltenHash => node(done => transaction(saltenHash).asCallback(done)))
-    .chainRej(manipulateError);
+    .chain(saltAndHash => node(done => transaction(saltAndHash).asCallback(done)))
+    .map(user => user.toJSON())
+    .chainRej(manipulateError('ValidationError'));
 };

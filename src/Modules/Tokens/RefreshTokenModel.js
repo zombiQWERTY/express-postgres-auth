@@ -6,7 +6,7 @@ import { Store } from '../../Start/ConnectionsStore';
 
 export const createModel = () => {
   const DB = Store.get('db');
-  const UserCard = Store.get('Models.Cards.User');
+  const User = Store.get('Models.User');
 
   DB.plugin(bookshelfMask);
   DB.plugin('visibility');
@@ -14,20 +14,21 @@ export const createModel = () => {
   DB.plugin(bookshelfParanoia, { field: 'deletedAt', sentinel: 'active' });
 
   const Model = DB.Model.extend({
-    tableName: 'users',
+    tableName: 'refreshTokens',
     softDelete: true,
     hasTimestamps: ['createdAt', 'updatedAt'],
-    userCard_id: function () {
-      return this.belongsTo(UserCard);
+    user_id: function () {
+      return this.hasOne(User);
     }
   }, {
     schema: [
       fields.BooleanField('active'),
-      fields.IntField('userCard_id', { required: true }),
-      fields.StringField('salt', { required: true }),
-      fields.StringField('password', { required: true })
+      fields.IntField('user_id', { required: true }),
+      fields.DateField('expiresIn', { required: true }),
+      fields.StringField('clientId', { required: true }),
+      fields.StringField('refreshToken', { required: true })
     ]
   });
 
-  Store.add('Models.User', Model);
+  Store.add('Models.Token.Refresh', Model);
 };

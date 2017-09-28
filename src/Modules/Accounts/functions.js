@@ -36,13 +36,21 @@ const makeTransaction = (Account, Card, cardData, relationField) => {
   return R.compose(Card.transaction, saveProfile);
 };
 
-const processProfile = (Card, transaction, data) =>
-  validateEmailUniqueness(Card, data.email)
-    .chain(() => generateSaltenHash(data.password))
+const processProfile = (transaction, email, password) => {
+  const StudentCard = Store.get('Models.Cards.Student');
+  const TeacherCard = Store.get('Models.Cards.Teacher');
+
+  const checkUniqueness = () =>
+    Future.both(validateEmailUniqueness(StudentCard, email),
+      validateEmailUniqueness(TeacherCard, email));
+
+  return checkUniqueness(email)
+    .chain(() => generateSaltenHash(password))
     .map(({ hash, salt }) => ({ password: hash, salt }))
     .chain(saltAndHash => node(done => transaction(saltAndHash).asCallback(done)))
     .map(user => user.toJSON())
     .chainRej(manipulateError('ValidationError'));
+};
 
 export const createStudent = data => {
   const Student = Store.get('Models.Student');
@@ -56,7 +64,7 @@ export const createStudent = data => {
   );
 
   const transaction = makeTransaction(Student, StudentCard, cardData(data), 'studentCard_id');
-  return processProfile(StudentCard, transaction, data);
+  return processProfile(transaction, data.email, data.password);
 };
 
 export const createTeacher = data => {
@@ -71,5 +79,5 @@ export const createTeacher = data => {
   );
 
   const transaction = makeTransaction(Teacher, TeacherCard, cardData(data), 'teacherCard_id');
-  return processProfile(TeacherCard, transaction, data);
+  return processProfile(transaction, data.email, data.password);
 };

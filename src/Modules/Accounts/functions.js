@@ -20,44 +20,56 @@ const validateEmailUniqueness = R.curry((Model, email) => {
     });
 });
 
-export const normalizeGroup = group => R.toUpper(group.charAt(0)) + R.slice(1, Infinity, group);
+const makeTransaction = (Account, Card, cardData, relationField) => {
+  const saveAccount = (saltenHash, t) => ({ attributes }) =>
+    new Account(R.merge({ [relationField]: attributes.id }, saltenHash))
+      .save(null, { transacting: t });
 
-export const create = (data, lowerGroup) => {
-  if (!R.keys(accountLevels).includes(lowerGroup)) {
-    return Future.reject(new ValidationError({
-      group: ['Invalid group.']
-    }));
-  }
+  const saveCard = t =>
+    new Card(cardData)
+      .save(null, { transacting: t });
 
-  const group = normalizeGroup(lowerGroup);
+  const saveProfile = saltenHash => t =>
+    saveCard(t)
+      .tap(saveAccount(saltenHash, t));
 
-  const Account = Store.get(`Models.${group}`);
-  const Card = Store.get(`Models.Cards.${group}`);
+  return R.compose(Card.transaction, saveProfile);
+};
 
-  const accountLevel = accountLevels[lowerGroup][0].value;
-  const accountCardFieldName = `${lowerGroup}Card_id`;
-
-  const saveAccount = R.curry((saltenHash, t, { attributes }) => {
-    const accountData = R.merge({ [accountCardFieldName]: attributes.id }, saltenHash);
-    return new Account(accountData).save(null, { transacting: t });
-  });
-
-  const saveCard = t => {
-    const cardData = R.pipe(
-      R.omit(['password']),
-      R.merge({ accountLevel })
-    );
-
-    return new Card(cardData(data)).save(null, { transacting: t });
-  };
-
-  const saveProfile = R.curry((saltenHash, t) => saveCard(t).tap(saveAccount(saltenHash, t)));
-  const transaction = R.compose(Card.transaction, saveProfile);
-
-  return validateEmailUniqueness(Card, data.email)
+const processProfile = (Card, transaction, data) =>
+  validateEmailUniqueness(Card, data.email)
     .chain(() => generateSaltenHash(data.password))
     .map(({ hash, salt }) => ({ password: hash, salt }))
     .chain(saltAndHash => node(done => transaction(saltAndHash).asCallback(done)))
     .map(user => user.toJSON())
     .chainRej(manipulateError('ValidationError'));
+
+export const createStudent = data => {
+  const Student = Store.get('Models.Student');
+  const StudentCard = Store.get('Models.Cards.Student');
+
+  const cardData = R.pipe(
+    R.omit(['password']),
+    R.merge({
+      accountLevel: accountLevels.student[0].value
+    })
+  );
+
+  const transaction = makeTransaction(Student, StudentCard, cardData(data), 'studentCard_id');
+  return processProfile(StudentCard, transaction, data);
+};
+
+export const createTeacher = data => {
+  const Teacher = Store.get('Models.Teacher');
+  const TeacherCard = Store.get('Models.Cards.Teacher');
+
+  const cardData = R.pipe(
+    R.omit(['password']),
+    R.merge({
+      accountLevel: accountLevels.teacher[0].value
+    })
+  );
+
+  const transaction = makeTransaction(Teacher, TeacherCard, cardData(data), 'teacherCard_id');
+  return processProfile(TeacherCard, transaction, data);
 };

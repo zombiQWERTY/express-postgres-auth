@@ -31,7 +31,8 @@ const signRefreshToken = data => {
   const payload = R.merge({ data }, { type: tokenType.refresh.key });
 
   return Future.of(jwt.sign(payload, secret, options))
-    .map(refreshToken => createSignature('Bearer', expiresIn, { refreshToken }));
+    .map(refreshToken =>
+      createSignature('Bearer', expiresIn, { refreshToken }));
 };
 
 const saveRefreshToken = payload => {

@@ -9,9 +9,6 @@ export default app => {
   const versions = routesVersifying();
 
   router.put('/:role', authorize(), versions(generate));
-  router.post('/test', authenticate(), (req, res, next) => {
-    res.setRes(req.user);
-  });
   router.patch('/', versions(regenerate));
 
   app.use(`/api/token`, router);

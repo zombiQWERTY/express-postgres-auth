@@ -16,14 +16,11 @@ export const createModel = () => {
   const Model = DB.Model.extend({
     tableName: 'refreshTokens',
     softDelete: true,
-    hasTimestamps: ['createdAt', 'updatedAt'],
-    student_id: function () {
-      return this.hasOne(Student);
-    }
+    hasTimestamps: ['createdAt', 'updatedAt']
   }, {
     schema: [
       fields.BooleanField('active'),
-      fields.IntField('student_id', { required: true }),
+      fields.IntField('userId', { required: true }),
       fields.DateField('expiresIn', { required: true }),
       fields.StringField('clientId', { required: true }),
       fields.StringField('refreshToken', { required: true })

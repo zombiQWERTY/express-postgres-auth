@@ -6,10 +6,10 @@ exports.up = function(knex, Promise) {
       table.dateTime('createdAt');
       table.dateTime('updatedAt');
       table.increments('id').primary();
+      table.integer('userId').notNullable();
       table.string('clientId').notNullable();
       table.dateTime('expiresIn').notNullable();
       table.string('refreshToken').notNullable();
-      table.integer('student_id').references('students.id');
     });
 };
 

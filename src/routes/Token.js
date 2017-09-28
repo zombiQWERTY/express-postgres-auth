@@ -8,7 +8,7 @@ export default app => {
   const router = express.Router();
   const versions = routesVersifying();
 
-  router.put('/', authorize(), versions(generate));
+  router.put('/:group', authorize(), versions(generate));
   router.patch('/', versions(regenerate));
 
   app.use(`/api/token`, router);

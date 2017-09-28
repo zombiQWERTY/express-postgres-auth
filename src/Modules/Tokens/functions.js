@@ -36,20 +36,20 @@ const signRefreshToken = data => {
 
 const saveRefreshToken = payload => {
   const RefreshToken = Store.get('Models.Token.Refresh');
-  const { user_id, clientId } = payload;
+  const { userId, clientId } = payload;
 
   const saveNewToken = t => new RefreshToken(payload).save(null, { transacting: t });
-  const disableOldTokens = t => new RefreshToken({ user_id, clientId }).destroy(null, { transacting: t });
+  const disableOldTokens = t => new RefreshToken({ userId, clientId }).destroy(null, { transacting: t });
   const doTransaction = () => RefreshToken.transaction(t => disableOldTokens(t).tap(saveNewToken(t)));
 
   return node(done => doTransaction().asCallback(done));
 };
 
-const generateAccessToken = user_id => signAccessToken({ id: user_id });
-const generateRefreshToken = (tokenScheme, clientId, user_id) =>
-  signRefreshToken({ id: user_id })
+const generateAccessToken = userId => signAccessToken({ id: userId });
+const generateRefreshToken = (tokenScheme, clientId, userId) =>
+  signRefreshToken({ id: userId })
     .chain(token => saveRefreshToken({
-      user_id,
+      userId,
       clientId,
       refreshToken: R.join(' ', [tokenScheme, token.refreshToken]),
       expiresIn: token.expiresIn
@@ -83,15 +83,15 @@ const parseToken = token => {
 export const verifyRefreshToken = (refreshToken, clientId) =>
   parseToken(refreshToken)
     .chain(({ value }) => verifyToken(value, tokenType.refresh.key))
-    .chain(({ data }) => validateRefreshTokenStatus({ clientId, refreshToken, user_id: data.id }))
+    .chain(({ data }) => validateRefreshTokenStatus({ clientId, refreshToken, userId: data.id }))
     .chainRej(manipulateError('ValidationError'))
     .map(token => token.toJSON())
-    .map(({ user_id }) => user_id);
+    .map(({ userId }) => userId);
 
-export const generateTokenPair = R.curry((clientId, user_id) => Future
+export const generateTokenPair = R.curry((clientId, userId) => Future
   .do(function *() {
-    const accessToken = yield generateAccessToken(user_id);
-    const { refreshToken } = yield generateRefreshToken('Bearer', clientId, user_id);
+    const accessToken = yield generateAccessToken(userId);
+    const { refreshToken } = yield generateRefreshToken('Bearer', clientId, userId);
     return R.merge(accessToken, { refreshToken });
   })
   .chainRej(manipulateError(null)));

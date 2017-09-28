@@ -5,12 +5,11 @@ import { generateSaltenHash } from '../Hashes/functions';
 import { accountLevel as accountLevels } from '../Cards/consts';
 import { ValidationError, manipulateError } from '../../utils/errors';
 
-const findModel = Model => (field, value) => node(done => Model.where(field, value).fetch().asCallback(done));
+const findModel = R.curry((Model, field, value) =>
+  node(done => Model.where(field, value).fetch().asCallback(done)));
 
-const validateEmailUniqueness = R.curry((Model, email) => {
-  const findBy = findModel(Model);
-
-  return findBy('email', email)
+const validateEmailUniqueness = (Model, email) =>
+  findModel(Model, 'email', email)
     .chain(user => {
       const error = new ValidationError({
         email: ['Email already exists']
@@ -18,7 +17,6 @@ const validateEmailUniqueness = R.curry((Model, email) => {
 
       return user ? Future.reject(error) : Future.of(email);
     });
-});
 
 const makeTransaction = (Account, Card, cardData, relationField) => {
   const saveAccount = (saltenHash, t) => ({ attributes }) =>

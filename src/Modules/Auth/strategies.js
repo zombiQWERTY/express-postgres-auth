@@ -36,10 +36,28 @@ export const local = () => {
     passwordField: 'password'
   };
 
-  const Card = Store.get('Models.Cards.Student');
+  const StudentCard = Store.get('Models.Cards.Student');
+  const TeacherCard = Store.get('Models.Cards.Teacher');
 
-  return new LocalStrategy(config, (req, username, plainPassword, done) =>
-    fetchAccount(Card, config.usernameField, R.toLower(username))
+  return new LocalStrategy(config, (req, username, plainPassword, done) => {
+    let Card;
+    switch (req.params.group) {
+      case ('student'): {
+        Card = StudentCard;
+        break;
+      }
+
+      case ('teacher'): {
+        Card = TeacherCard;
+        break;
+      }
+
+      default: {
+        return done(null, false);
+      }
+    }
+
+    return fetchAccount(Card, config.usernameField, R.toLower(username))
       .chain(model => model ? Future.of(model) : Future.reject(false))
       .chain(model => {
         const { password, salt } = model.related('credentials');
@@ -47,7 +65,8 @@ export const local = () => {
           .chain(hash => hash === password ? Future.of(model) : Future.reject(false));
       })
       .map(model => model.toJSON())
-      .fork(error => done(error, null), model => done(null, model)));
+      .fork(error => done(error, null), model => done(null, model))
+  });
 };
 
 export const init = () => {

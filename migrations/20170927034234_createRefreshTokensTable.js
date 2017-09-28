@@ -1,20 +1,19 @@
-import { pbkdf2 } from '../src/Modules/Hashes/consts';
-
 exports.up = function(knex, Promise) {
   return knex.schema
-    .createTable('users', function(table) {
+    .createTable('refreshTokens', function(table) {
       table.boolean('active');
       table.dateTime('deletedAt');
       table.dateTime('createdAt');
       table.dateTime('updatedAt');
       table.increments('id').primary();
-      table.string('salt').notNullable();
-      table.integer('userCard_id').unique().references('userCards.id');
-      table.string('password', pbkdf2.keylen * 2).notNullable();
+      table.string('clientId').notNullable();
+      table.dateTime('expiresIn').notNullable();
+      table.string('refreshToken').notNullable();
+      table.integer('student_id').references('students.id');
     });
 };
 
 exports.down = function(knex, Promise) {
   return knex.schema
-    .dropTable('users');
+    .dropTable('refreshTokens');
 };

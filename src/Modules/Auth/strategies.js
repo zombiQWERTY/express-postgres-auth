@@ -11,7 +11,7 @@ import { Store } from '../../Start/ConnectionsStore';
 
 export const JWT = () => {
   const { config } = Store.get('config');
-  const Card = Store.get('Models.Cards.User');
+  const Card = Store.get('Models.Cards.Student');
 
   const extractConfig = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -36,7 +36,7 @@ export const local = () => {
     passwordField: 'password'
   };
 
-  const Card = Store.get('Models.Cards.User');
+  const Card = Store.get('Models.Cards.Student');
 
   return new LocalStrategy(config, (req, username, plainPassword, done) =>
     fetchAccount(Card, config.usernameField, R.toLower(username))

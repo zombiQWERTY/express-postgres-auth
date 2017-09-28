@@ -1,9 +1,9 @@
 import R from 'ramda';
-import { userAccountLevel } from '../src/Modules/Cards/consts';
+import { accountLevel } from '../src/Modules/Cards/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema
-    .createTable('userCards', function(table) {
+    .createTable('studentCards', function(table) {
       table.boolean('active');
       table.dateTime('deletedAt');
       table.dateTime('createdAt');
@@ -13,11 +13,11 @@ exports.up = function(knex, Promise) {
       table.string('phone').notNullable();
       table.string('lastname').notNullable();
       table.string('email').unique().notNullable();
-      table.enum('accountLevel', R.keys(userAccountLevel.toJSON()));
+      table.enum('accountLevel', R.values(accountLevel.student.toJSON()));
     });
 };
 
 exports.down = function(knex, Promise) {
   return knex.schema
-    .dropTable('userCards');
+    .dropTable('studentCards');
 };

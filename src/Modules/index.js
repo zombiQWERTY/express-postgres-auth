@@ -1,13 +1,13 @@
-import { createModel as createUserModel } from './Accounts/UserModel';
+import { createModel as createStudentModel } from './Accounts/StudentModel';
 import { createModel as createTeacherModel } from './Accounts/TeacherModel';
-import { createModel as createUserCardModel } from './Cards/UserCardModel';
+import { createModel as createStudentCardModel } from './Cards/StudentCardModel';
 import { createModel as createTeacherCardModel } from './Cards/TeacherCardModel';
 import { createModel as createRefreshTokenModel } from './Tokens/RefreshTokenModel';
 
 export const initialize = () => {
-  createUserModel();
+  createStudentModel();
   createTeacherModel();
-  createUserCardModel();
+  createStudentCardModel();
   createTeacherCardModel();
   createRefreshTokenModel();
 };

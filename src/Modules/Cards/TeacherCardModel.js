@@ -6,7 +6,7 @@ import { Store } from '../../Start/ConnectionsStore';
 
 export const createModel = () => {
   const DB = Store.get('db');
-  const Teacher = Store.get('Models.User');
+  const Teacher = Store.get('Models.Student');
 
   DB.plugin(bookshelfMask);
   DB.plugin('visibility');
@@ -17,12 +17,14 @@ export const createModel = () => {
     tableName: 'teacherCards',
     softDelete: true,
     hasTimestamps: ['createdAt', 'updatedAt'],
+    hidden: ['credentials', 'deletedAt', 'createdAt', 'updatedAt'],
     credentials: function () {
       return this.hasOne(Teacher);
     }
   }, {
     schema: [
       fields.BooleanField('active'),
+      fields.IntField('credentials'),
       fields.StringField('phone', { required: true }),
       fields.StringField('accountLevel', { required: true }),
       fields.EmailField('email', { required: true, maxLength: 64 }),

@@ -7,7 +7,7 @@ export default app => {
   const router = express.Router();
   const versions = routesVersioning();
 
-  router.put('/', versions(create));
+  router.put('/:group', versions(create));
 
   app.use(`/api/account`, router);
 };

@@ -6,7 +6,7 @@ import { Store } from '../../Start/ConnectionsStore';
 
 export const createModel = () => {
   const DB = Store.get('db');
-  const UserCard = Store.get('Models.Cards.User');
+  const Student = Store.get('Models.Student');
 
   DB.plugin(bookshelfMask);
   DB.plugin('visibility');
@@ -14,20 +14,24 @@ export const createModel = () => {
   DB.plugin(bookshelfParanoia, { field: 'deletedAt', sentinel: 'active' });
 
   const Model = DB.Model.extend({
-    tableName: 'users',
+    tableName: 'studentCards',
     softDelete: true,
     hasTimestamps: ['createdAt', 'updatedAt'],
-    userCard_id: function () {
-      return this.belongsTo(UserCard);
+    hidden: ['credentials', 'deletedAt', 'createdAt', 'updatedAt'],
+    credentials: function () {
+      return this.hasOne(Student);
     }
   }, {
     schema: [
       fields.BooleanField('active'),
-      fields.IntField('userCard_id', { required: true }),
-      fields.StringField('salt', { required: true }),
-      fields.StringField('password', { required: true })
+      fields.IntField('credentials'),
+      fields.StringField('phone', { required: true }),
+      fields.StringField('accountLevel', { required: true }),
+      fields.EmailField('email', { required: true, maxLength: 64 }),
+      fields.StringField('name', { required: true, maxLength: 32 }),
+      fields.StringField('lastname', { required: true, maxLength: 32 })
     ]
   });
 
-  Store.add('Models.User', Model);
+  Store.add('Models.Cards.Student', Model);
 };

@@ -1,8 +1,8 @@
 import R from 'ramda';
 import Future, { node } from 'fluture';
-import { userAccountLevel } from '../Cards/consts';
 import { Store } from '../../Start/ConnectionsStore';
 import { generateSaltenHash } from '../Hashes/functions';
+import { accountLevel as accountLevels } from '../Cards/consts';
 import { ValidationError, manipulateError } from '../../utils/errors';
 
 const findModel = Model => (field, value) => node(done => Model.where(field, value).fetch().asCallback(done));
@@ -20,14 +20,25 @@ const validateEmailUniqueness = R.curry((Model, email) => {
     });
 });
 
-export const create = data => {
-  const Account = Store.get('Models.User');
-  const Card = Store.get('Models.Cards.User');
+export const normalizeGroup = group => R.toUpper(group.charAt(0)) + R.slice(1, Infinity, group);
 
-  const accountLevel = userAccountLevel.get('beginner').key;
+export const create = (data, lowerGroup) => {
+  if (!R.keys(accountLevels).includes(lowerGroup)) {
+    return Future.reject(new ValidationError({
+      group: ['Invalid group.']
+    }));
+  }
+
+  const group = normalizeGroup(lowerGroup);
+
+  const Account = Store.get(`Models.${group}`);
+  const Card = Store.get(`Models.Cards.${group}`);
+
+  const accountLevel = accountLevels[lowerGroup][0].value;
+  const accountCardFieldName = `${lowerGroup}Card_id`;
 
   const saveAccount = R.curry((saltenHash, t, { attributes }) => {
-    const accountData = R.merge({ userCard_id: attributes.id }, saltenHash);
+    const accountData = R.merge({ [accountCardFieldName]: attributes.id }, saltenHash);
     return new Account(accountData).save(null, { transacting: t });
   });
 

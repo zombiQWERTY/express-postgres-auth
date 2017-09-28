@@ -1,4 +1,6 @@
 import Enum from 'enum';
 
-export const userAccountLevel = new Enum(['beginner', 'medium', 'advanced']);
-export const teacherAccountLevel = new Enum(['candidate1', 'candidate2', 'candidate3', 'candidate4', 'teacher']);
+export const accountLevel = {
+  student: new Enum({ 0: 'beginner', 10: 'medium', 20: 'advanced' }),
+  teacher: new Enum({ 0: 'candidate1', 10: 'candidate2', 20: 'candidate3', 30: 'candidate4', 40: 'teacher' })
+};

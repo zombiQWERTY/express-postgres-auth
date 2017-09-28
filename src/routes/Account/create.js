@@ -1,7 +1,7 @@
 import { create as createUser } from '../../Modules/Accounts/functions';
 
 /**
- * @api {put} /api/account Create new account
+ * @api {put} /api/account/:group Create new account for student or teacher
  * @apiName Create
  * @apiGroup Account
  *
@@ -16,7 +16,7 @@ import { create as createUser } from '../../Modules/Accounts/functions';
  */
 
 const v1_0_0 = (req, res, next) =>
-  createUser(req.body)
+  createUser(req.body, req.params.group)
     .map(user => ({ user }))
     .fork(next, res.setRes);
 

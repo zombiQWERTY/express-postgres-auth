@@ -45,9 +45,9 @@ const saveRefreshToken = payload => {
   return node(done => doTransaction().asCallback(done));
 };
 
-const generateAccessToken = userId => signAccessToken({ id: userId });
-const generateRefreshToken = (tokenScheme, clientId, userId) =>
-  signRefreshToken({ id: userId })
+const generateAccessToken = signAccessToken;
+const generateRefreshToken = (tokenScheme, clientId, userId, role) =>
+  signRefreshToken({ userId, role })
     .chain(token => saveRefreshToken({
       userId,
       clientId,
@@ -65,10 +65,11 @@ const verifyToken = (token, type) => Future((reject, resolve) => {
     jwtError ? reject(jwtError) : resolve(payload));
 });
 
-const validateRefreshTokenStatus = payload =>
+const validateRefreshTokenStatus = ({ clientId, refreshToken, userId, role }) =>
   Future.of(Store.get('Models.Token.Refresh'))
-    .chain(RefreshToken => node(done => new RefreshToken(payload).fetch().asCallback(done)))
-    .chain(token => token ? Future.of(token) : Future.reject(new ValidationError({
+    .chain(RefreshToken =>
+      node(done => new RefreshToken({ clientId, refreshToken, userId }).fetch().asCallback(done)))
+    .chain(token => token ? Future.of({ clientId, refreshToken, userId, role }) : Future.reject(new ValidationError({
       refreshToken: ['Token not found']
     })));
 
@@ -83,15 +84,14 @@ const parseToken = token => {
 export const verifyRefreshToken = (refreshToken, clientId) =>
   parseToken(refreshToken)
     .chain(({ value }) => verifyToken(value, tokenType.refresh.key))
-    .chain(({ data }) => validateRefreshTokenStatus({ clientId, refreshToken, userId: data.id }))
-    .chainRej(manipulateError('ValidationError'))
-    .map(token => token.toJSON())
-    .map(({ userId }) => userId);
+    .chain(({ data }) => validateRefreshTokenStatus({ clientId, refreshToken, userId: data.userId, role: data.role }))
+    .chainRej(manipulateError('ValidationError'));
 
-export const generateTokenPair = R.curry((clientId, userId) => Future
-  .do(function *() {
-    const accessToken = yield generateAccessToken(userId);
-    const { refreshToken } = yield generateRefreshToken('Bearer', clientId, userId);
-    return R.merge(accessToken, { refreshToken });
-  })
-  .chainRej(manipulateError(null)));
+export const generateTokenPair = data =>
+  Future
+    .do(function *() {
+      const accessToken = yield generateAccessToken(data);
+      const { refreshToken } = yield generateRefreshToken('Bearer', data.clientId, data.userId, data.role);
+      return R.merge(accessToken, { refreshToken });
+    })
+    .chainRej(manipulateError(null));

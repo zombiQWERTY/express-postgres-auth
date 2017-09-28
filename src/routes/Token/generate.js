@@ -1,7 +1,7 @@
 import { generateTokenPair } from '../../Modules/Tokens/functions';
 
 /**
- * @api {put} /api/token/:group Generate tokens pair by email and password for group (teacher|student)
+ * @api {put} /api/token/:role Generate tokens pair by email and password for role (teacher|student)
  * @apiName GeneratePair
  * @apiGroup Token
  *
@@ -19,7 +19,7 @@ import { generateTokenPair } from '../../Modules/Tokens/functions';
  */
 
 const v1_0_0 = (req, res, next) =>
-  generateTokenPair(req.headers['x-request-id'], req.user.id)
+  generateTokenPair({ clientId: req.headers['x-request-id'], role: req.user.role, userId: req.user.id })
     .fork(next, res.setRes);
 
 export const generate = {

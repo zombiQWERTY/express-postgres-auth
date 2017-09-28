@@ -6,7 +6,7 @@ import { Store } from '../../Start/ConnectionsStore';
 
 export const createModel = () => {
   const DB = Store.get('db');
-  const Teacher = Store.get('Models.Student');
+  const Teacher = Store.get('Models.Teacher');
 
   DB.plugin(bookshelfMask);
   DB.plugin('visibility');

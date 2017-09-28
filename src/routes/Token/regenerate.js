@@ -19,7 +19,7 @@ import { verifyRefreshToken, generateTokenPair } from '../../Modules/Tokens/func
 
 const v1_0_0 = (req, res, next) =>
   verifyRefreshToken(req.body.refreshToken, req.headers['x-request-id'])
-    .chain(generateTokenPair(req.headers['x-request-id']))
+    .chain(({ userId, role }) => generateTokenPair({ clientId: req.headers['x-request-id'], role, userId }))
     .fork(next, res.setRes);
 
 export const regenerate = {

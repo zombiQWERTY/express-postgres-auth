@@ -9,26 +9,54 @@ import { fetchByField } from '../Cards/functions';
 import { fetchAccount } from '../Accounts/getters';
 import { Store } from '../../Start/ConnectionsStore';
 
-export const JWT = () => {
-  const { config } = Store.get('config');
-  const Card = Store.get('Models.Cards.Student');
+const getCard = () => {
+  const StudentCard = Store.get('Models.Cards.Student');
+  const TeacherCard = Store.get('Models.Cards.Teacher');
 
+  return role => {
+    switch (role) {
+      case 'student': {
+        return StudentCard;
+      }
+
+      case 'teacher': {
+        return TeacherCard;
+      }
+
+      default: {
+        return null;
+      }
+    }
+  };
+};
+
+const JWT = () => {
+  const cardOf = getCard();
+  const { config } = Store.get('config');
   const extractConfig = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.secrets.jwt
+    secretOrKey: config.secrets.jwt.access
   };
 
   return new JWTStrategy(extractConfig, (jwtPayload, done) => {
     const { data, type } = jwtPayload;
-    if (data.id && tokenType.access.is(type)) {
-      fetchByField(Card, 'id', data.id)
+    if (data && data.userId && data.clientId && data.role && tokenType.access.is(type)) {
+      const Card = cardOf(data.role);
+      if (!Card) { return done(null, false); }
+
+      fetchByField(Card, 'id', data.userId)
+        .chain(user => user ? Future.of(user) : Future.reject(null))
         .map(user => user.toJSON())
+        .map(R.merge({ role: data.role }))
         .fork(error => done(error, false), user => done(null, user));
+    } else {
+      done(null, false);
     }
   });
 };
 
-export const local = () => {
+const local = () => {
+  const cardOf = getCard();
   const config = {
     session: false,
     usernameField: 'email',
@@ -36,26 +64,9 @@ export const local = () => {
     passwordField: 'password'
   };
 
-  const StudentCard = Store.get('Models.Cards.Student');
-  const TeacherCard = Store.get('Models.Cards.Teacher');
-
   return new LocalStrategy(config, (req, username, plainPassword, done) => {
-    let Card;
-    switch (req.params.group) {
-      case ('student'): {
-        Card = StudentCard;
-        break;
-      }
-
-      case ('teacher'): {
-        Card = TeacherCard;
-        break;
-      }
-
-      default: {
-        return done(null, false);
-      }
-    }
+    const Card = cardOf(req.params.role);
+    if (!Card) { return done(null, false); }
 
     return fetchAccount(Card, config.usernameField, R.toLower(username))
       .chain(model => model ? Future.of(model) : Future.reject(false))
@@ -65,6 +76,7 @@ export const local = () => {
           .chain(hash => hash === password ? Future.of(model) : Future.reject(false));
       })
       .map(model => model.toJSON())
+      .map(R.merge({ role: req.params.role }))
       .fork(error => done(error, null), model => done(null, model))
   });
 };

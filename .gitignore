@@ -21,4 +21,4 @@ syntax: glob
 
 syntax: regexp
 config/.*\.json$
-/knex.js
+/knexfile.js

@@ -2,7 +2,7 @@ import { createTeacher } from '../../Modules/Accounts/functions';
 
 /**
  * @api {put} /api/account/teacher Create new teacher
- * @apiName CreateStudent
+ * @apiName CreateTeacher
  * @apiGroup Account
  *
  * @apiParam {String} name User's name

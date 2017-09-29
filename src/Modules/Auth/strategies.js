@@ -8,6 +8,7 @@ import { hashBySalt } from '../Hashes/functions';
 import { fetchByField } from '../Cards/functions';
 import { fetchAccount } from '../Accounts/getters';
 import { Store } from '../../Start/ConnectionsStore';
+import { AuthenticationError } from '../../utils/errors';
 
 const getCard = () => {
   const StudentCard = Store.get('Models.Cards.Student');
@@ -42,15 +43,15 @@ const JWT = () => {
     const { data, type } = jwtPayload;
     if (data && data.userId && data.clientId && data.role && tokenType.access.is(type)) {
       const Card = cardOf(data.role);
-      if (!Card) { return done(null, false); }
+      if (!Card) { return done(new AuthenticationError(), false); }
 
       fetchByField(Card, 'id', data.userId)
-        .chain(user => user ? Future.of(user) : Future.reject(null))
+        .chain(user => user ? Future.of(user) : Future.reject(new AuthenticationError()))
         .map(user => user.toJSON())
         .map(R.merge({ role: data.role }))
-        .fork(error => done(error, false), user => done(null, user));
+        .fork(_ => done(new AuthenticationError(), null), user => done(null, user));
     } else {
-      done(null, false);
+      done(new AuthenticationError(), false);
     }
   });
 };
@@ -66,18 +67,18 @@ const local = () => {
 
   return new LocalStrategy(config, (req, username, plainPassword, done) => {
     const Card = cardOf(req.params.role);
-    if (!Card) { return done(null, false); }
+    if (!Card) { return done(new AuthenticationError(), false); }
 
     return fetchAccount(Card, config.usernameField, R.toLower(username))
-      .chain(model => model ? Future.of(model) : Future.reject(false))
+      .chain(model => model ? Future.of(model) : Future.reject(new AuthenticationError()))
       .chain(model => {
         const { password, salt } = model.related('credentials');
         return hashBySalt(plainPassword, salt)
-          .chain(hash => hash === password ? Future.of(model) : Future.reject(false));
+          .chain(hash => hash === password ? Future.of(model) : Future.reject(new AuthenticationError()));
       })
       .map(model => model.toJSON())
       .map(R.merge({ role: req.params.role }))
-      .fork(error => done(error, null), model => done(null, model))
+      .fork(_ => done(new AuthenticationError(), null), model => done(null, model))
   });
 };
 

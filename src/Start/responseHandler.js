@@ -9,7 +9,7 @@ export const setResponse = (req, res) => payload => {
     genericLogger.error(payload);
 
     const type = 'json';
-    const status = 200;
+    const status = payload.status || 200;
     const success = false;
 
     const json = { payload, success };

@@ -31,6 +31,14 @@ export class ValidationError extends ApplicationError {
   }
 }
 
+export class AuthenticationError extends ApplicationError {
+  constructor(message) {
+    super(message || 'User not found.');
+    this.status = 401;
+    this.name = 'AuthenticationError';
+  }
+}
+
 export class WrapError extends ApplicationError {
   constructor(name, cause) {
     super(R.pathOr('', ['message'], cause));
@@ -41,6 +49,6 @@ export class WrapError extends ApplicationError {
   }
 }
 
-export const isApplicationError = error => error instanceof  ApplicationError;
+export const isApplicationError = error => error instanceof ApplicationError;
 export const manipulateError =
   R.curry((message, error) => Future.reject(new WrapError(message || error.message, error)));

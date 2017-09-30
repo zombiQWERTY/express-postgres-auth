@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
   return knex.schema
-    .createTable('refreshTokens', function(table) {
+    .createTableIfNotExists('refreshTokens', function(table) {
       table.boolean('active');
       table.dateTime('deletedAt');
       table.dateTime('createdAt');

@@ -3,7 +3,7 @@ import { accountLevel } from '../src/Modules/Cards/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema
-    .createTable('studentCards', function(table) {
+    .createTableIfNotExists('studentCards', function(table) {
       table.boolean('active');
       table.dateTime('deletedAt');
       table.dateTime('createdAt');

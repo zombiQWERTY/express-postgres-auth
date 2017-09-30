@@ -2,7 +2,7 @@ import { pbkdf2 } from '../src/Modules/Hashes/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema
-    .createTable('students', function(table) {
+    .createTableIfNotExists('students', function(table) {
       table.boolean('active');
       table.dateTime('deletedAt');
       table.dateTime('createdAt');

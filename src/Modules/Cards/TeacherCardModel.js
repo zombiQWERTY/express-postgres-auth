@@ -29,7 +29,7 @@ export const createModel = () => {
       fields.StringField('accountLevel', { required: true }),
       fields.EmailField('email', { required: true, maxLength: 64 }),
       fields.StringField('name', { required: true, maxLength: 32 }),
-      fields.StringField('lastname', { required: true, maxLength: 32 })
+      fields.StringField('familyName', { required: true, maxLength: 32 })
     ]
   });
 

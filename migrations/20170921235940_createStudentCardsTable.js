@@ -11,7 +11,7 @@ exports.up = function(knex, Promise) {
       table.increments('id').primary();
       table.string('name').notNullable();
       table.string('phone').notNullable();
-      table.string('lastname').notNullable();
+      table.string('familyName').notNullable();
       table.string('email').unique().notNullable();
       table.enum('accountLevel', R.values(accountLevel.student.toJSON()));
     });

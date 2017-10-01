@@ -23,13 +23,13 @@ export const createModel = () => {
     }
   }, {
     schema: [
+      fields.StringField('phone'),
       fields.BooleanField('active'),
       fields.IntField('credentials'),
-      fields.StringField('phone', { required: true }),
+      fields.StringField('lastname', { maxLength: 32 }),
       fields.StringField('accountLevel', { required: true }),
       fields.EmailField('email', { required: true, maxLength: 64 }),
-      fields.StringField('name', { required: true, maxLength: 32 }),
-      fields.StringField('lastname', { required: true, maxLength: 32 })
+      fields.StringField('name', { required: true, maxLength: 32 })
     ]
   });
 

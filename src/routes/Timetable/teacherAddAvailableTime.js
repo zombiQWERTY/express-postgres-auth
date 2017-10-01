@@ -1,4 +1,4 @@
-import { generateTokenPair } from '../../Modules/Tokens/functions';
+import { generateTokenPair } from '../../Modules/Timetable/functions';
 
 /**
  * @api {put} /api/timetable/teacher/availability Add an entry to teacher's availability timetable

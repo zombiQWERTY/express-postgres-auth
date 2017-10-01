@@ -23,9 +23,9 @@ export const createModel = () => {
   }, {
     schema: [
       fields.BooleanField('active'),
-      fields.IntField('teacherCard_id', { required: true }),
       fields.StringField('salt', { required: true }),
-      fields.StringField('password', { required: true })
+      fields.StringField('password', { required: true }),
+      fields.IntField('teacherCard_id', { required: true })
     ]
   });
 

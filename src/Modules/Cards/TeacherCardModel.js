@@ -26,6 +26,7 @@ export const createModel = () => {
       fields.BooleanField('active'),
       fields.IntField('credentials'),
       fields.StringField('phone', { required: true }),
+      fields.IntField('UTCOffset', { required: true }),
       fields.StringField('accountLevel', { required: true }),
       fields.EmailField('email', { required: true, maxLength: 64 }),
       fields.StringField('name', { required: true, maxLength: 32 }),

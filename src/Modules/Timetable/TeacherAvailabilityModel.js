@@ -21,8 +21,8 @@ export const createModel = () => {
     schema: [
       fields.IntField('teacher', { required: true }),
       fields.IntField('dayOfWeek', { required: true }),
-      fields.IntField('startInterval', { required: true }),
-      fields.IntField('endInterval', { required: true })
+      fields.IntField('start', { required: true }),
+      fields.IntField('end', { required: true })
     ]
   });
 

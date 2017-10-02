@@ -3,6 +3,7 @@ import Checkit from 'checkit';
 import Future, { node } from 'fluture';
 import { knex } from '../../db/index';
 import { generateSaltenHash } from '../Hashes/functions';
+import { makeRules, runValidator } from '../../Helpers/CheckIt/functions';
 import { accountLevel as accountLevels } from '../Cards/consts';
 
 export const findModel = (table, column, value) =>
@@ -16,13 +17,11 @@ const validateEmailUniqueness = (table, email) =>
         : Future.of(email));
 
 const validateRegistrationRules = () =>
-  new Checkit({
+  makeRules({
     firstName: ['required', 'string'],
     email: ['required', 'string', 'email'],
     password: ['required', 'string', 'maxLength:255', 'minLength:6']
   });
-
-const runValidator = (rules, data) => Future.tryP(() => rules.run(data));
 
 export const createStudent = data =>
   Future.do(function *() {

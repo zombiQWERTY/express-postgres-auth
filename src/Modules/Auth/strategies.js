@@ -9,21 +9,7 @@ import { findModel } from '../Accounts/functions';
 import { Store } from '../../Start/ConnectionsStore';
 import { AuthenticationError } from '../../utils/errors';
 
-const getTableName = role => {
-  switch (role) {
-    case 'student': {
-      return 'students';
-    }
-
-    case 'teacher': {
-      return 'teachers';
-    }
-
-    default: {
-      return null;
-    }
-  }
-};
+const isValidTable = table => ['teachers', 'students'].includes(table);
 
 const JWT = () => {
   const { config } = Store.get('config');
@@ -35,8 +21,8 @@ const JWT = () => {
   return new JWTStrategy(extractConfig, (jwtPayload, done) => {
     const { data, type } = jwtPayload;
     if (data && data.userId && data.clientId && data.role && tokenType.access.is(type)) {
-      const table = getTableName(data.role);
-      if (!table) { return done(new AuthenticationError(), false); }
+      const table = `${data.role}s`;
+      if (!isValidTable(table)) { return done(new AuthenticationError(), false); }
 
       findModel(table, 'id', data.userId)
         .chain(res => res.length > 0 ? Future.of(res[0]) : Future.reject(new AuthenticationError()))
@@ -57,10 +43,10 @@ const local = () => {
   };
 
   return new LocalStrategy(config, (req, username, plainPassword, done) => {
-    const table = getTableName(req.params.role);
-    if (!table) { return done(new AuthenticationError(), false); }
+    const table = `${req.params.role}s`;
+    if (!isValidTable(table)) { return done(new AuthenticationError(), false); }
 
-    return findModel(table, config.usernameField, R.toLower(username))
+    findModel(table, config.usernameField, R.toLower(username))
       .chain(res => res.length > 0 ? Future.of(res[0]) : Future.reject(new AuthenticationError()))
       .chain(account => {
         const { password, salt } = account;

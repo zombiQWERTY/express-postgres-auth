@@ -10,13 +10,26 @@ const validateInterval = (start, end) =>
 const validateIntervalUniqueness = (Model, teacher, dayOfWeek, start, end) =>
   node(done =>
     Model
-      .query(qb => qb
-        .where({ teacher, dayOfWeek })
-        .andWhere('end', '>=', start)
-        .andWhere('start', '<=', end)) // TODO: develop a query
+      .query(qb => function () {
+        const query = `
+          "teacher"   = :teacher   AND 
+          "dayOfWeek" = :dayOfWeek AND 
+          (
+            "start" < :end OR 
+            "end" > :start OR
+            (
+              "start" > :start AND
+              "end" < :end
+            )
+          )
+        `;
+
+        this.whereRaw(query, { teacher, dayOfWeek, start, end });
+      })
     .fetch()
     .asCallback(done))
     .chain(entry => {
+      console.log(entry);
       const error = new ValidationError({
         interval: ['Entity with this day and time interval already exists.']
       });

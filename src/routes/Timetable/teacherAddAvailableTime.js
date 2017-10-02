@@ -1,4 +1,5 @@
-import { generateTokenPair } from '../../Modules/Timetable/functions';
+import R from 'ramda';
+import { insertAvailableTime } from '../../Modules/Timetable/functions';
 
 /**
  * @api {put} /api/timetable/teacher/availability Add an entry to teacher's availability timetable
@@ -13,9 +14,8 @@ import { generateTokenPair } from '../../Modules/Timetable/functions';
  */
 
 const v1_0_0 = (req, res, next) =>
-  generateTokenPair({ clientId: req.headers['x-request-id'], role: req.user.role, userId: req.user.id })
+  insertAvailableTime(R.merge(req.body, { teacher: req.user.id }))
     .fork(next, res.setRes);
-// write fn that validates an interval in db and another that saves an entity into db
 
 export const add = {
   '1.0.0': v1_0_0

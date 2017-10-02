@@ -12,7 +12,7 @@ const validateEmailUniqueness = (Model, email) =>
   findModel(Model, 'email', email)
     .chain(user => {
       const error = new ValidationError({
-        email: ['Email already exists']
+        email: ['Email already exists.']
       });
 
       return user ? Future.reject(error) : Future.of(email);

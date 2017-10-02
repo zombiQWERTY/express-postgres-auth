@@ -1,6 +1,6 @@
 import express from 'express';
 import routesVersifying from 'express-routes-versioning';
-import { authenticate } from '../Modules/Auth';
+import { authenticate, onlyTeacherStub } from '../Modules/Auth';
 import { add as teacherAddAvailableTime } from './Timetable/teacherAddAvailableTime';
 
 export default app => {
@@ -8,7 +8,7 @@ export default app => {
   const versions = routesVersifying();
 
   // router.put('/student', versions(createStudent));
-  router.put('/teacher/availability', authenticate(), versions(teacherAddAvailableTime));
+  router.put('/teacher/availability', authenticate(), onlyTeacherStub(), versions(teacherAddAvailableTime));
 
   app.use(`/api/timetable`, router);
 };

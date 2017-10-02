@@ -1,16 +1,27 @@
+import R from 'ramda';
 import { pbkdf2 } from '../src/Modules/Hashes/consts';
+import { accountLevel } from '../src/Modules/Cards/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema
     .createTable('students', function(table) {
-      table.boolean('active');
+      table.increments('id').primary();
+
       table.dateTime('deletedAt');
       table.dateTime('createdAt');
       table.dateTime('updatedAt');
-      table.increments('id').primary();
+
+
       table.string('salt').notNullable();
-      table.integer('studentCard_id').unique().references('studentCards.id');
       table.string('password', pbkdf2.keylen * 2).notNullable();
+
+      table.string('phone');
+      table.string('email').unique().notNullable();
+
+      table.string('familyName');
+      table.string('firstName').notNullable();
+
+      table.enum('accountLevel', R.values(accountLevel.student.toJSON()));
     });
 };
 

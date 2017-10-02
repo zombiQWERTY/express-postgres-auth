@@ -5,34 +5,27 @@ import LocalStrategy from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import { tokenType } from '../Tokens/consts';
 import { hashBySalt } from '../Hashes/functions';
-import { fetchByField } from '../Cards/functions';
-import { fetchAccount } from '../Accounts/getters';
+import { findModel } from '../Accounts/functions';
 import { Store } from '../../Start/ConnectionsStore';
 import { AuthenticationError } from '../../utils/errors';
 
-const getCard = () => {
-  const StudentCard = Store.get('Models.Cards.Student');
-  const TeacherCard = Store.get('Models.Cards.Teacher');
-
-  return role => {
-    switch (role) {
-      case 'student': {
-        return StudentCard;
-      }
-
-      case 'teacher': {
-        return TeacherCard;
-      }
-
-      default: {
-        return null;
-      }
+const getTableName = role => {
+  switch (role) {
+    case 'student': {
+      return 'students';
     }
-  };
+
+    case 'teacher': {
+      return 'teachers';
+    }
+
+    default: {
+      return null;
+    }
+  }
 };
 
 const JWT = () => {
-  const cardOf = getCard();
   const { config } = Store.get('config');
   const extractConfig = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -42,12 +35,11 @@ const JWT = () => {
   return new JWTStrategy(extractConfig, (jwtPayload, done) => {
     const { data, type } = jwtPayload;
     if (data && data.userId && data.clientId && data.role && tokenType.access.is(type)) {
-      const Card = cardOf(data.role);
-      if (!Card) { return done(new AuthenticationError(), false); }
+      const table = getTableName(data.role);
+      if (!table) { return done(new AuthenticationError(), false); }
 
-      fetchByField(Card, 'id', data.userId)
-        .chain(user => user ? Future.of(user) : Future.reject(new AuthenticationError()))
-        .map(user => user.toJSON())
+      findModel(table, 'id', data.userId)
+        .chain(res => res.length > 0 ? Future.of(res[0]) : Future.reject(new AuthenticationError()))
         .map(R.merge({ role: data.role }))
         .fork(_ => done(new AuthenticationError(), null), user => done(null, user));
     } else {
@@ -57,7 +49,6 @@ const JWT = () => {
 };
 
 const local = () => {
-  const cardOf = getCard();
   const config = {
     session: false,
     usernameField: 'email',
@@ -66,19 +57,18 @@ const local = () => {
   };
 
   return new LocalStrategy(config, (req, username, plainPassword, done) => {
-    const Card = cardOf(req.params.role);
-    if (!Card) { return done(new AuthenticationError(), false); }
+    const table = getTableName(req.params.role);
+    if (!table) { return done(new AuthenticationError(), false); }
 
-    return fetchAccount(Card, config.usernameField, R.toLower(username))
-      .chain(model => model ? Future.of(model) : Future.reject(new AuthenticationError()))
-      .chain(model => {
-        const { password, salt } = model.related('credentials');
+    return findModel(table, config.usernameField, R.toLower(username))
+      .chain(res => res.length > 0 ? Future.of(res[0]) : Future.reject(new AuthenticationError()))
+      .chain(account => {
+        const { password, salt } = account;
         return hashBySalt(plainPassword, salt)
-          .chain(hash => hash === password ? Future.of(model) : Future.reject(new AuthenticationError()));
+          .chain(hash => hash === password ? Future.of(account) : Future.reject(new AuthenticationError()));
       })
-      .map(model => model.toJSON())
       .map(R.merge({ role: req.params.role }))
-      .fork(_ => done(new AuthenticationError(), null), model => done(null, model))
+      .fork(_ => done(new AuthenticationError(), null), account => done(null, account))
   });
 };
 

@@ -3,6 +3,7 @@ import R from 'ramda';
 import moment from 'moment';
 import jwt from 'jsonwebtoken';
 import Future, { node } from 'fluture';
+import { knex } from '../../db/index';
 import { tokenType } from './consts';
 import { ValidationError, manipulateError } from '../../utils/errors';
 import { Store } from '../../Start/ConnectionsStore';
@@ -36,12 +37,11 @@ const signRefreshToken = data => {
 };
 
 const saveRefreshToken = payload => {
-  const RefreshToken = Store.get('Models.Token.Refresh');
   const { userId, clientId } = payload;
 
-  const saveNewToken = t => new RefreshToken(payload).save(null, { transacting: t });
-  const disableOldTokens = t => new RefreshToken({ userId, clientId }).destroy(null, { transacting: t });
-  const doTransaction = () => RefreshToken.transaction(t => disableOldTokens(t).tap(saveNewToken(t)));
+  const saveNewToken = t => knex('refreshTokens').transacting(t).insert(payload);
+  const disableOldTokens = t => knex('refreshTokens').transacting(t).where({ userId, clientId }).del();
+  const doTransaction = () => knex().transaction(t => disableOldTokens(t).tap(saveNewToken(t)));
 
   return node(done => doTransaction().asCallback(done));
 };
@@ -67,12 +67,12 @@ const verifyToken = (token, type) => Future((reject, resolve) => {
 });
 
 const validateRefreshTokenStatus = ({ clientId, refreshToken, userId, role }) =>
-  Future.of(Store.get('Models.Token.Refresh'))
-    .chain(RefreshToken =>
-      node(done => new RefreshToken({ clientId, refreshToken, userId }).fetch().asCallback(done)))
-    .chain(token => token ? Future.of({ clientId, refreshToken, userId, role }) : Future.reject(new ValidationError({
-      refreshToken: ['Token not found']
-    })));
+  node(done => knex('refreshTokens').where({ clientId, refreshToken, userId }).asCallback(done))
+    .chain(res => res.length
+      ? Future.of({ clientId, refreshToken, userId, role })
+      : Future.reject(new ValidationError({
+          refreshToken: ['Token not found']
+        })));
 
 const parseToken = token => {
   const re = /(\S+)\s+(\S+)/;

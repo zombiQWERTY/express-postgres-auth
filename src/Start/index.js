@@ -14,7 +14,7 @@ import { genericLogger } from '../utils/logger';
 import { createDBConnection } from '../db/index';
 import { getURI, getBaseURI } from '../utils/baseURI';
 import { middleware, customMiddleware } from './middleware';
-import { initialize as modulesInitialize } from '../Modules/index';
+// import { initialize as modulesInitialize } from '../Modules/index';
 import { init as initStrategiesPassport } from '../Modules/Auth/strategies';
 // import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
@@ -57,14 +57,14 @@ export const start = routes => Future
     Store.add('config', { config, knex });
 
     yield createStructure();
-    const db = yield Future.of(createDBConnection(knex[NODE_ENV]));
-    Store.add('db', db);
+    const knexConnection = yield Future.of(createDBConnection(knex[NODE_ENV]));
+    Store.add('knex', knexConnection);
 
     // const Redis = yield Future.of(createRedisConnection());
     // handleRedisEvents(Redis);
     // Store.add('redis', Redis);
 
-    modulesInitialize();
+    // modulesInitialize();
 
     const app = express();
     app.use(middleware());

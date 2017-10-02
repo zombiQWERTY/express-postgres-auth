@@ -1,9 +1,5 @@
-import knex from 'knex';
-import bookshelf from 'bookshelf';
+import knexQB from 'knex';
+import { Store } from '../Start/ConnectionsStore';
 
-export const createDBConnection = config => {
-  const db = bookshelf(knex(config));
-  db.plugin('registry');
-
-  return db;
-};
+export const createDBConnection = config => knexQB(config);
+export const knex = table => table ? Store.get('knex')(table) : Store.get('knex');

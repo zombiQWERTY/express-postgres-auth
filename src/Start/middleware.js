@@ -11,7 +11,7 @@ import { setResponse } from './responseHandler';
 
 const maxAge = 1200;
 const preflightContinue = true;
-const origin = ['http://localhost', 'https://iqlang.com'];
+const origin = ['http://localhost', 'http://localhost:8080', 'https://iqlang.com'];
 const methods = ['OPTIONS', 'GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD'];
 
 const allowedHeaders = [

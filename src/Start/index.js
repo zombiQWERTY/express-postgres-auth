@@ -12,9 +12,7 @@ import { Store } from './ConnectionsStore';
 import { NODE_ENV } from '../utils/NODE_ENV';
 import { genericLogger } from '../utils/logger';
 import { createDBConnection } from '../db/index';
-import { getURI, getBaseURI } from '../utils/baseURI';
 import { middleware, customMiddleware } from './middleware';
-// import { initialize as modulesInitialize } from '../Modules/index';
 import { init as initStrategiesPassport } from '../Modules/Auth/strategies';
 // import { createRedisConnection, handleRedisEvents } from '../redis/client';
 
@@ -42,9 +40,8 @@ const HTTPEventsListener = server =>
 export const requireRoutes = () => [importDir('../routes')];
 
 export const success = () => {
-  genericLogger.verbose(`Server started on port ${getURI().port}.`);
+  genericLogger.verbose(`Server started on port ${config.service.port}.`);
   genericLogger.verbose(`Environment: ${NODE_ENV}.`);
-  genericLogger.verbose(`Base URI: ${getBaseURI()}.`);
 };
 
 export const gracefulExit = (...args) => {
@@ -64,8 +61,6 @@ export const start = routes => Future
     // handleRedisEvents(Redis);
     // Store.add('redis', Redis);
 
-    // modulesInitialize();
-
     const app = express();
     app.use(middleware());
 
@@ -74,7 +69,7 @@ export const start = routes => Future
     customMiddleware(app, routes);
     Store.add('app', app);
 
-    const server = http.createServer(app).listen(getURI().startport);
+    const server = http.createServer(app).listen(config.service.port);
     yield HTTPEventsListener(server);
     Store.add('server', server);
   });

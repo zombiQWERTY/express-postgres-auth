@@ -5,8 +5,8 @@ import { knex } from '../../db/index';
 import { generateSaltenHash } from '../Hashes/functions';
 import { accountLevel as accountLevels } from '../Cards/consts';
 
-export const findModel = (table, field, value) =>
-  node(done => knex(table).where(field, value).asCallback(done));
+export const findModel = (table, column, value) =>
+  node(done => knex(table).where(column, value).asCallback(done));
 
 const validateEmailUniqueness = (table, email) =>
   findModel(table, 'email', email)

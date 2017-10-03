@@ -8,10 +8,10 @@ import knex from '../../knexfile';
 import config from '../../config/config.json';
 
 import { createFolder } from './utils';
-import { Store } from './Store';
+import { Store } from '../Modules/Store/Store';
+import { createDBConnection } from '../db/index';
 import { NODE_ENV } from '../Helpers/ENV/NODE_ENV';
 import { genericLogger } from '../Helpers/Logger/functions';
-import { createDBConnection } from '../db/index';
 import { middleware, customMiddleware } from './middleware';
 import { init as initStrategiesPassport } from '../Modules/Auth/strategies';
 // import { createRedisConnection, handleRedisEvents } from '../redis/client';

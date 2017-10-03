@@ -3,7 +3,7 @@ import IORedis from 'ioredis';
 import { fromEvent } from 'most';
 import { genericLogger } from '../Helpers/Logger/functions';
 import { isProduction } from '../Helpers/ENV/NODE_ENV';
-import { Store } from '../Start/Store';
+import { Store } from '../Modules/Store/Store';
 
 export const handleRedisEvents = Redis => {
   fromEvent('error', Redis)

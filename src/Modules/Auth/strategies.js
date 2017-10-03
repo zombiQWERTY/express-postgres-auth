@@ -3,10 +3,10 @@ import Future from 'fluture';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
+import { Store } from '../Store/Store';
 import { tokenType } from '../Tokens/consts';
 import { hashBySalt } from '../Hashes/functions';
 import { findModel } from '../Accounts/functions';
-import { Store } from '../../Start/Store';
 import { AuthenticationError } from '../../Helpers/Errors/classes';
 
 const isValidTable = table => ['teachers', 'students'].includes(table);

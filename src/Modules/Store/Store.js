@@ -1,6 +1,6 @@
 import R from 'ramda';
 
-class ConnectionsStore {
+class Store {
   static instances = {};
 
   static add(name, connection) {
@@ -21,4 +21,4 @@ class ConnectionsStore {
   }
 }
 
-export { ConnectionsStore as Store };
+export { Store };

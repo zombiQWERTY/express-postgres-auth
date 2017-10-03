@@ -3,9 +3,9 @@ import R from 'ramda';
 import moment from 'moment';
 import jwt from 'jsonwebtoken';
 import Future, { node } from 'fluture';
-import { knex } from '../../db/index';
 import { tokenType } from './consts';
-import { Store } from '../../Start/Store';
+import { knex } from '../../db/index';
+import { Store } from '../Store/Store';
 import { ValidationError } from '../../Helpers/Errors/classes';
 
 const convertExpiresInToDate = expiresIn => moment.utc().add(ms(expiresIn), 'ms').toDate();

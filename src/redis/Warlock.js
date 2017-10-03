@@ -1,5 +1,5 @@
 import WarlockRedis from 'node-redis-warlock';
-import { Store } from '../Start/Store';
+import { Store } from '../Modules/Store/Store';
 
 export const createWarlock = redis => new WarlockRedis(redis);
 

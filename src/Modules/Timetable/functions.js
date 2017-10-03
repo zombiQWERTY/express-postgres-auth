@@ -1,5 +1,5 @@
 import Future, { node } from 'fluture';
-import { Store } from '../../Start/Store';
+import { Store } from '../Store/Store';
 import { ValidationError } from '../../Helpers/Errors/classes';
 
 const validateInterval = (start, end) =>

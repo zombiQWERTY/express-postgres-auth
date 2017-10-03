@@ -1,5 +1,5 @@
 import R from 'ramda';
-import { genericLogger } from '../utils/logger';
+import { genericLogger } from '../Helpers/Logger/functions';
 import { manipulateErrorData } from '../Helpers/Errors/classes';
 
 export const setResponse = (req, res) => payload => {

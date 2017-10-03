@@ -6,7 +6,7 @@ import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import { tokenType } from '../Tokens/consts';
 import { hashBySalt } from '../Hashes/functions';
 import { findModel } from '../Accounts/functions';
-import { Store } from '../../Start/ConnectionsStore';
+import { Store } from '../../Start/Store';
 import { AuthenticationError } from '../../Helpers/Errors/classes';
 
 const isValidTable = table => ['teachers', 'students'].includes(table);

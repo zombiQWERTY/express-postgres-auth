@@ -1,5 +1,5 @@
 import Future from 'fluture';
-import { createLogger } from './utils/logger';
+import { createLogger } from './Helpers/Logger/functions';
 import { requireRoutes, start, success, gracefulExit } from './Start';
 
 (() => {

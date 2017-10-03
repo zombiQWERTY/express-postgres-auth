@@ -8,9 +8,9 @@ import knex from '../../knexfile';
 import config from '../../config/config.json';
 
 import { createFolder } from './utils';
-import { Store } from './ConnectionsStore';
-import { NODE_ENV } from '../utils/NODE_ENV';
-import { genericLogger } from '../utils/logger';
+import { Store } from './Store';
+import { NODE_ENV } from '../Helpers/ENV/NODE_ENV';
+import { genericLogger } from '../Helpers/Logger/functions';
 import { createDBConnection } from '../db/index';
 import { middleware, customMiddleware } from './middleware';
 import { init as initStrategiesPassport } from '../Modules/Auth/strategies';

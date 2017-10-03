@@ -1,41 +1,8 @@
 import winston from 'winston';
 import Sentry from 'winston-sentry';
-import config from '../../config/config.json';
-
-import { isProduction, NODE_ENV } from './NODE_ENV';
-
-/**
- * error:   0
- * warn:    1
- * info:    2
- * verbose: 3
- * debug:   4
- * silly:   5
- */
-
-const levels = {
-  production: {
-    generic: {
-      console: -1,
-      file: 'info',
-      sentry: 'warn'
-    }
-  },
-  development: {
-    generic: {
-      sentry: -1,
-      file: 'info',
-      console: 'silly'
-    }
-  },
-  test: {
-    generic: {
-      file: -1,
-      sentry: -1,
-      console: -1,
-    }
-  }
-};
+import config from '../../../config/config.json';
+import { levels } from './consts';
+import { isProduction, NODE_ENV } from '../ENV/NODE_ENV';
 
 export const createLogger = () => {
   winston.loggers.add('generic', {

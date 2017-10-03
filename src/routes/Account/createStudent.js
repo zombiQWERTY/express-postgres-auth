@@ -9,7 +9,7 @@ import { createStudent } from '../../Modules/Accounts/functions';
  * @apiParam {String} phone User's phone
  * @apiParam {String} email User's email
  * @apiParam {String} password User's password
- * @apiParam {String} lastname User's last name
+ * @apiParam {String} familyName User's last name
 
  * @apiSuccess 200 Success
  * @apiVersion 1.0.0

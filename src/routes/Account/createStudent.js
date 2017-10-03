@@ -5,7 +5,7 @@ import { createStudent } from '../../Modules/Accounts/functions';
  * @apiName CreateStudent
  * @apiGroup Account
  *
- * @apiParam {String} name User's name
+ * @apiParam {String} firstName User's name
  * @apiParam {String} email User's email
  * @apiParam {String} password User's password
  * @apiParam {Number} UTCOffset User's UTC-timezone offset

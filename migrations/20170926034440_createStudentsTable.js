@@ -21,6 +21,7 @@ exports.up = function(knex, Promise) {
       table.string('familyName');
       table.string('firstName').notNullable();
 
+      table.integer('UTCOffset').notNullable();
       table.enum('accountLevel', R.values(studentAccountLevel.toJSON()));
     });
 };

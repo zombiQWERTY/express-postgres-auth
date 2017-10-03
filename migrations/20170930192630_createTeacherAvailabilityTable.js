@@ -6,11 +6,12 @@ exports.up = function(knex, Promise) {
   return knex
     .schema
     .createTableIfNotExists('teacherAvailability', function(table) {
-      table.boolean('active');
+      table.increments('id').primary();
+
       table.dateTime('deletedAt');
       table.dateTime('createdAt');
       table.dateTime('updatedAt');
-      table.increments('id').primary();
+
       table.integer('teacher').notNullable();
       table.enum('end', hoursRange).notNullable();
       table.enum('start', hoursRange).notNullable();

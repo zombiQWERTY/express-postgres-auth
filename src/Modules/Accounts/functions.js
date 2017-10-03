@@ -21,8 +21,12 @@ const validateEmailUniqueness = (table, email) =>
 const validateRegistrationRules = () =>
   makeRules({
     firstName: ['required', 'string'],
+    UTCOffset: ['required', 'integer'],
     email: ['required', 'string', 'email'],
-    password: ['required', 'string', 'maxLength:255', 'minLength:6']
+    password: ['required', 'string', 'maxLength:255', 'minLength:6'],
+
+    familyName: ['string'],
+    phone: ['string']
   });
 
 export const createStudent = data =>

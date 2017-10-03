@@ -1,6 +1,6 @@
 import Future, { node } from 'fluture';
 import { Store } from '../../Start/ConnectionsStore';
-import { ValidationError } from '../../utils/errors';
+import { ValidationError } from '../../Helpers/Errors/classes';
 
 const validateInterval = (start, end) =>
   start < end ? Future.of(true) : Future.reject(new ValidationError({

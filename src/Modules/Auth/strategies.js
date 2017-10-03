@@ -7,7 +7,7 @@ import { tokenType } from '../Tokens/consts';
 import { hashBySalt } from '../Hashes/functions';
 import { findModel } from '../Accounts/functions';
 import { Store } from '../../Start/ConnectionsStore';
-import { AuthenticationError } from '../../utils/errors';
+import { AuthenticationError } from '../../Helpers/Errors/classes';
 
 const isValidTable = table => ['teachers', 'students'].includes(table);
 
@@ -54,6 +54,7 @@ const local = () => {
           .chain(hash => hash === password ? Future.of(account) : Future.reject(new AuthenticationError()));
       })
       .map(R.merge({ role: req.params.role }))
+      .map(R.omit(['password', 'salt', 'deletedAt', 'createdAt', 'updatedAt']))
       .fork(_ => done(new AuthenticationError(), null), account => done(null, account))
   });
 };

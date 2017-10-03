@@ -20,6 +20,7 @@ import { generateTokenPair } from '../../Modules/Tokens/functions';
 
 const v1_0_0 = (req, res, next) =>
   generateTokenPair({ clientId: req.headers['x-request-id'], role: req.user.role, userId: req.user.id })
+    .map(tokens => ({ tokens, user: req.user }))
     .fork(next, res.setRes);
 
 export const generate = {

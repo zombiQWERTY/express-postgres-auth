@@ -1,10 +1,10 @@
 import R from 'ramda';
-import Checkit from 'checkit';
 import Future, { node } from 'fluture';
 import { knex } from '../../db/index';
 import { generateSaltenHash } from '../Hashes/functions';
+import { ValidationError } from '../../Helpers/Errors/classes';
 import { makeRules, runValidator } from '../../Helpers/CheckIt/functions';
-import { accountLevel as accountLevels } from '../Cards/consts';
+import { studentAccountLevel, teacherAccountLevel } from '../Cards/consts';
 
 export const findModel = (table, column, value) =>
   node(done => knex(table).where(column, value).asCallback(done));
@@ -13,7 +13,9 @@ const validateEmailUniqueness = (table, email) =>
   findModel(table, 'email', email)
     .chain(res =>
       res.length > 0
-        ? Future.reject(new Checkit.ValidationError('The email address is already in use.'))
+        ? Future.reject(new ValidationError({
+            email: ['The email address is already in use.']
+          }))
         : Future.of(email));
 
 const validateRegistrationRules = () =>
@@ -26,27 +28,31 @@ const validateRegistrationRules = () =>
 export const createStudent = data =>
   Future.do(function *() {
     const validData = yield runValidator(validateRegistrationRules(), data);
-    yield validateEmailUniqueness('students', data.email);
+    yield Future.both(
+      validateEmailUniqueness('students', data.email),
+      validateEmailUniqueness('teachers', data.email));
 
     const { salt, hash } = yield generateSaltenHash(validData.password);
     const password = hash;
-    const accountLevel = accountLevels.student[0].value;
+    const accountLevel = studentAccountLevel[0].value;
 
     const accountData = R.merge(validData, { salt, password, accountLevel });
-    yield node(done => knex('students').insert(accountData).asCallback(done)); // TODO: handle errors
+    yield node(done => knex('students').insert(accountData).asCallback(done));
     return R.omit(['password', 'salt'], accountData);
   });
 
 export const createTeacher = data =>
   Future.do(function *() {
     const validData = yield runValidator(validateRegistrationRules(), data);
-    yield validateEmailUniqueness('teachers', data.email);
+    yield Future.both(
+      validateEmailUniqueness('students', data.email),
+      validateEmailUniqueness('teachers', data.email));
 
     const { salt, hash } = yield generateSaltenHash(validData.password);
     const password = hash;
-    const accountLevel = accountLevels.teacher[0].value;
+    const accountLevel = teacherAccountLevel[0].value;
 
     const accountData = R.merge(validData, { salt, password, accountLevel });
-    yield node(done => knex('teachers').insert(accountData).asCallback(done)); // TODO: handle errors
+    yield node(done => knex('teachers').insert(accountData).asCallback(done));
     return R.omit(['password', 'salt'], accountData);
   });

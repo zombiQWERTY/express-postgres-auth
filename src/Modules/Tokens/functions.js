@@ -5,8 +5,8 @@ import jwt from 'jsonwebtoken';
 import Future, { node } from 'fluture';
 import { knex } from '../../db/index';
 import { tokenType } from './consts';
-import { ValidationError, manipulateError } from '../../utils/errors';
 import { Store } from '../../Start/ConnectionsStore';
+import { ValidationError } from '../../Helpers/Errors/classes';
 
 const convertExpiresInToDate = expiresIn => moment.utc().add(ms(expiresIn), 'ms').toDate();
 const createSignature = (tokenScheme, expiresIn, token) =>
@@ -71,7 +71,7 @@ const validateRefreshTokenStatus = ({ clientId, refreshToken, userId, role }) =>
     .chain(res => res.length
       ? Future.of({ clientId, refreshToken, userId, role })
       : Future.reject(new ValidationError({
-          refreshToken: ['Token not found']
+          refreshToken: ['Token not found.']
         })));
 
 const parseToken = token => {
@@ -83,16 +83,27 @@ const parseToken = token => {
 };
 
 export const verifyRefreshToken = (refreshToken, clientId) =>
-  parseToken(refreshToken)
+  Future.of(clientId)
+    .chain(clientId => clientId
+      ? Future.of(clientId)
+      : Future.reject(new ValidationError({
+          clientId: ['Unique client id not found.']
+        })))
+    .chain(() => parseToken(refreshToken))
     .chain(({ value }) => verifyToken(value, tokenType.refresh.key))
-    .chain(({ data }) => validateRefreshTokenStatus({ clientId, refreshToken, userId: data.userId, role: data.role }))
-    .chainRej(manipulateError('ValidationError'));
+    .chain(({ data }) =>
+      validateRefreshTokenStatus({ clientId, refreshToken, userId: data.userId, role: data.role }));
 
 export const generateTokenPair = data =>
   Future
     .do(function *() {
+      if (!data.clientId) {
+        throw new ValidationError({
+          clientId: ['Unique client id not found.']
+        });
+      }
+
       const accessToken = yield generateAccessToken(data);
       const { refreshToken } = yield generateRefreshToken('Bearer', data.clientId, data.userId, data.role);
       return R.merge(accessToken, { refreshToken });
-    })
-    .chainRej(manipulateError(null));
+    });

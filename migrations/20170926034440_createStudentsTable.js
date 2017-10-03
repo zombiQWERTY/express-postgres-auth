@@ -1,6 +1,6 @@
 import R from 'ramda';
 import { pbkdf2 } from '../src/Modules/Hashes/consts';
-import { accountLevel } from '../src/Modules/Cards/consts';
+import { studentAccountLevel } from '../src/Modules/Cards/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema
@@ -21,7 +21,7 @@ exports.up = function(knex, Promise) {
       table.string('familyName');
       table.string('firstName').notNullable();
 
-      table.enum('accountLevel', R.values(accountLevel.student.toJSON()));
+      table.enum('accountLevel', R.values(studentAccountLevel.toJSON()));
     });
 };
 

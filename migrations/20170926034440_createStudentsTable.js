@@ -11,7 +11,6 @@ exports.up = function(knex, Promise) {
       table.dateTime('createdAt');
       table.dateTime('updatedAt');
 
-
       table.string('salt').notNullable();
       table.string('password', pbkdf2.keylen * 2).notNullable();
 

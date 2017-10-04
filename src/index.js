@@ -1,11 +1,9 @@
-import Future from 'fluture';
 import { createLogger } from './Helpers/Logger/functions';
 import { requireRoutes, start, success, gracefulExit } from './Start';
 
 (() => {
-  Future
-    .of(createLogger())
-    .map(requireRoutes)
+  createLogger()
+    .chain(requireRoutes)
     .chain(start)
     .fork(gracefulExit, success);
 })();

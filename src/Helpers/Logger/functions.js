@@ -1,3 +1,4 @@
+import Future from 'fluture';
 import winston from 'winston';
 import Sentry from 'winston-sentry';
 import config from '../../../config/config.json';
@@ -24,6 +25,8 @@ export const createLogger = () => {
       })
     ]
   });
+
+  return Future.of(true);
 };
 
 export const genericLogger = winston.loggers.get('generic');

@@ -1,8 +1,4 @@
-import R from 'ramda';
-
 exports.up = function(knex, Promise) {
-  const daysRange = R.range(1, 8);
-  const hoursRange = R.range(1, 25);
   return knex
     .schema
     .createTableIfNotExists('teacherAvailability', function(table) {
@@ -13,9 +9,9 @@ exports.up = function(knex, Promise) {
       table.dateTime('updatedAt');
 
       table.integer('teacher').notNullable();
-      table.enum('end', hoursRange).notNullable();
-      table.enum('start', hoursRange).notNullable();
-      table.enum('dayOfWeek', daysRange).notNullable();
+      table.integer('end').notNullable();
+      table.integer('start').notNullable();
+      table.integer('dayOfWeek').notNullable();
     });
 };
 

@@ -8,7 +8,7 @@ export class ApplicationError extends Error {
 
 export class ValidationError extends ApplicationError {
   constructor(errors) {
-    super(`${R.length(R.keys(errors))} invalid values`);
+    super();
     this.errors = errors;
     this.name = 'ValidationError';
   }
@@ -19,11 +19,12 @@ export class AuthenticationError extends ApplicationError {
     super(message || 'User not found.');
     this.status = 401;
     this.name = 'AuthenticationError';
+    this.detail = message || 'User not found.';
   }
 }
 
 export class DBError extends ApplicationError {
-  constructor(cause) {
+  constructor() {
     super('Database error.');
     this.name = 'DatabaseError';
   }
@@ -44,5 +45,5 @@ export const manipulateErrorData = error => {
     message = undefined;
   }
 
-  return { errors, message, success: false };
+  return { errors, message, detail: error.detail, success: false };
 };

@@ -37,7 +37,7 @@ const HTTPEventsListener = server =>
       .observe(() => resolve(server));
   });
 
-export const requireRoutes = () => [importDir('../routes')];
+export const requireRoutes = () => Future.of([importDir('../routes')]);
 
 export const success = () => {
   genericLogger.verbose(`Server started on port ${config.service.port}.`);

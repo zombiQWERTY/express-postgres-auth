@@ -1,10 +1,10 @@
 import ms from 'ms';
 import R from 'ramda';
 import moment from 'moment';
+import Future from 'fluture';
 import jwt from 'jsonwebtoken';
-import Future, { node } from 'fluture';
 import { tokenType } from './consts';
-import { knex } from '../../db/index';
+import { knex, makeCb } from '../../db/index';
 import { Store } from '../Store/Store';
 import { ValidationError } from '../../Helpers/Errors/classes';
 
@@ -43,7 +43,7 @@ const saveRefreshToken = payload => {
   const disableOldTokens = t => knex('refreshTokens').transacting(t).where({ userId, clientId }).del();
   const doTransaction = () => knex().transaction(t => disableOldTokens(t).tap(saveNewToken(t)));
 
-  return node(done => doTransaction().asCallback(done));
+  return makeCb(doTransaction());
 };
 
 const generateAccessToken = signAccessToken;
@@ -67,7 +67,7 @@ const verifyToken = (token, type) => Future((reject, resolve) => {
 });
 
 const validateRefreshTokenStatus = ({ clientId, refreshToken, userId, role }) =>
-  node(done => knex('refreshTokens').where({ clientId, refreshToken, userId }).asCallback(done))
+  makeCb(knex('refreshTokens').where({ clientId, refreshToken, userId }))
     .chain(res => res.length
       ? Future.of({ clientId, refreshToken, userId, role })
       : Future.reject(new ValidationError({
@@ -77,9 +77,11 @@ const validateRefreshTokenStatus = ({ clientId, refreshToken, userId, role }) =>
 const parseToken = token => {
   const re = /(\S+)\s+(\S+)/;
   const matches = token.match(re);
-  return matches ? Future.of({ scheme: matches[1], value: matches[2] }) : Future.reject(new ValidationError({
-    token: ['Invalid signature']
-  }));
+  return matches
+    ? Future.of({ scheme: matches[1], value: matches[2] })
+    : Future.reject(new ValidationError({
+        token: ['Invalid signature']
+      }));
 };
 
 export const verifyRefreshToken = (refreshToken, clientId) =>

@@ -31,8 +31,8 @@ const validateInterval = (start, end, dayOfWeek) =>
   isEndGTStart(start, end) && is24Deal(start) && is24Deal(end) && isDayOfWeek(dayOfWeek)
     ? Future.of(true)
     : Future.reject(new ValidationError({
-      interval: ['Invalid interval.']
-    }));
+        interval: ['Invalid interval.']
+      }));
 
 const validateIntervalUniqueness = (teacher, dayOfWeek, start, end) =>
   makeCb(knex('teacherAvailability')
@@ -48,4 +48,5 @@ export const insertAvailableTime = ({ teacher, dayOfWeek, start, end }) =>
   validateInterval(start, end, dayOfWeek)
     .chain(() => validateIntervalData({ teacher, dayOfWeek, start, end }))
     .chain(() => validateIntervalUniqueness(teacher, dayOfWeek, start, end))
-    .chain(() => makeCb(knex('teacherAvailability').insert({ teacher, dayOfWeek, start, end })));
+    .chain(() => makeCb(knex('teacherAvailability').insert({ teacher, dayOfWeek, start, end })))
+    .map(() => {});

@@ -2,15 +2,20 @@ import R from 'ramda';
 import { genericLogger } from '../Helpers/Logger/functions';
 import { manipulateErrorData } from '../Helpers/Errors/classes';
 
-export const setResponse = (req, res) => payload => {
-  if (payload instanceof Error || payload.success === false) {
-    genericLogger.error(payload);
+const isError = payload => payload instanceof Error;
 
+export const setResponse = (req, res) => payload => {
+  const status = R.pathOr(200, ['status'], payload);
+
+  if (isError(payload)) {
+    genericLogger.error(payload);
     const errorData = manipulateErrorData(R.omit(['status', 'success'], payload));
-    const json = { payload: R.omit(['status', 'success'], errorData), success: false };
-    return res.status(payload.status || 200).send(json);
+    return res
+      .status(status)
+      .send({ payload: R.omit(['status', 'success'], errorData), success: false });
   } else {
-    const json = { payload: R.omit(['status', 'success'], payload), success: true };
-    return res.status(payload.status || 200).send(json);
+    return res
+      .status(status)
+      .send({ payload: R.omit(['status', 'success'], payload), success: true });
   }
 };

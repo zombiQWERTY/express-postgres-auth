@@ -1,4 +1,5 @@
 import R from 'ramda';
+import moment from 'moment';
 import Future from 'fluture';
 import { knex, makeCb } from '../../db/index';
 import { generateSaltenHash } from '../Hashes/functions';
@@ -18,6 +19,10 @@ const validateEmailUniqueness = (table, email) =>
             email: ['The email address is already in use.']
           })));
 
+const validateEmailUniquenessBoth = email =>
+  Future.both(validateEmailUniqueness('students', email),
+    validateEmailUniqueness('teachers', email));
+
 const validateRegistrationRules = () =>
   makeRules({
     phone: ['string'],
@@ -28,18 +33,19 @@ const validateRegistrationRules = () =>
     password: ['required', 'string', 'maxLength:255', 'minLength:6']
   });
 
+const createTimestamps = date => R.fromPairs([['createdAt', date], ['updatedAt', date]]);
+
 export const createStudent = data =>
   Future.do(function *() {
     const validData = yield runValidator(validateRegistrationRules(), data);
-    yield Future.both(
-      validateEmailUniqueness('students', data.email),
-      validateEmailUniqueness('teachers', data.email));
+    yield validateEmailUniquenessBoth(data.email);
 
     const { salt, hash } = yield generateSaltenHash(validData.password);
     const password = hash;
     const accountLevel = studentAccountLevel[0].value;
+    const timestamps = createTimestamps(moment.utc());
 
-    const accountData = R.merge(validData, { salt, password, accountLevel });
+    const accountData = R.mergeAll([validData, timestamps, { salt, password, accountLevel }]);
     yield makeCb(knex('students').insert(accountData));
     return R.omit(['password', 'salt'], accountData);
   });
@@ -47,15 +53,14 @@ export const createStudent = data =>
 export const createTeacher = data =>
   Future.do(function *() {
     const validData = yield runValidator(validateRegistrationRules(), data);
-    yield Future.both(
-      validateEmailUniqueness('students', data.email),
-      validateEmailUniqueness('teachers', data.email));
+    yield validateEmailUniquenessBoth(data.email);
 
     const { salt, hash } = yield generateSaltenHash(validData.password);
     const password = hash;
     const accountLevel = teacherAccountLevel[0].value;
+    const timestamps = createTimestamps(moment.utc());
 
-    const accountData = R.merge(validData, { salt, password, accountLevel });
+    const accountData = R.mergeAll([validData, timestamps, { salt, password, accountLevel }]);
     yield makeCb(knex('teachers').insert(accountData));
     return R.omit(['password', 'salt'], accountData);
   });

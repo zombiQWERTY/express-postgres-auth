@@ -45,10 +45,12 @@ const validateIntervalUniqueness = ({ teacher, dayOfWeek, start, end }) =>
             interval: ['Entity with this day and time interval already exists.']
           })));
 
+const insertToAvailabilityModel = knex('teacherAvailability').insert;
+
 export const insertAvailableTime = ({ teacher, dayOfWeek, start, end }) =>
   validateIntervalData({ teacher, dayOfWeek, start, end })
-    .map(R.map(Number))
+    .map(R.map(parseInt(R.__, 10)))
     .chain(validateInterval)
     .chain(validateIntervalUniqueness)
-    .chain(data => makeCb(knex('teacherAvailability').insert(data)))
+    .chain(R.call(makeCb(insertToAvailabilityModel, R.__)))
     .map(() => {});

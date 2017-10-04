@@ -50,6 +50,26 @@ export const createStudent = data =>
     return R.omit(['password', 'salt'], accountData);
   });
 
+// TODO: remove this after MVP showing
+const saveTeacher = payload => {
+  const saveNewTeacher = t => knex('teachers')
+    .transacting(t)
+    .insert(payload)
+    .returning('id');
+
+  const saveTeacherLevel = t => resp =>
+    knex('teacherLevelLanguageJunction')
+      .transacting(t)
+      .insert({
+        teacher: resp[0],
+        language: 2,
+        difficultyLevel: 1
+      });
+
+  const doTransaction = () => knex().transaction(t => saveNewTeacher(t).tap(saveTeacherLevel(t)));
+  return makeCb(doTransaction());
+};
+
 export const createTeacher = data =>
   Future.do(function *() {
     const validData = yield runValidator(validateRegistrationRules(), data);
@@ -61,6 +81,7 @@ export const createTeacher = data =>
     const timestamps = createTimestamps(moment.utc());
 
     const accountData = R.mergeAll([validData, timestamps, { salt, password, accountLevel }]);
-    yield makeCb(knex('teachers').insert(accountData));
+    // yield makeCb(knex('teachers').insert(accountData));
+    yield saveTeacher(accountData);
     return R.omit(['password', 'salt'], accountData);
   });

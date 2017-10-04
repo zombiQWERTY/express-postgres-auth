@@ -11,9 +11,8 @@ exports.up = function(knex, Promise) {
       table.dateTime('createdAt');
       table.dateTime('updatedAt');
 
-      table.integer('level').notNullable();
+      table.integer('difficultyLevel').notNullable();
       table.integer('teacher').notNullable();
-      table.integer('student').notNullable();
       table.integer('language').notNullable();
 
       table.dateTime('startTime').notNullable();

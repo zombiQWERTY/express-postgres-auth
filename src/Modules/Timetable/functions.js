@@ -1,3 +1,4 @@
+import R from 'ramda';
 import Future from 'fluture';
 import { knex, makeCb } from '../../db/index';
 import { ValidationError } from '../../Helpers/Errors/classes';
@@ -27,26 +28,27 @@ const validateIntervalRules = () =>
   });
 
 const validateIntervalData = runValidator(validateIntervalRules());
-const validateInterval = (start, end, dayOfWeek) =>
+const validateInterval = ({ start, end, dayOfWeek, teacher }) =>
   isEndGTStart(start, end) && is24Deal(start) && is24Deal(end) && isDayOfWeek(dayOfWeek)
-    ? Future.of(true)
+    ? Future.of({ start, end, dayOfWeek, teacher })
     : Future.reject(new ValidationError({
         interval: ['Invalid interval.']
       }));
 
-const validateIntervalUniqueness = (teacher, dayOfWeek, start, end) =>
+const validateIntervalUniqueness = ({ teacher, dayOfWeek, start, end }) =>
   makeCb(knex('teacherAvailability')
     .whereRaw(validateIntervalUniquenessQuery, { teacher, dayOfWeek, start, end }))
     .chain(entries =>
       entries.length === 0
-        ? Future.of(true)
+        ? Future.of({ teacher, dayOfWeek, start, end })
         : Future.reject(new ValidationError({
             interval: ['Entity with this day and time interval already exists.']
           })));
 
 export const insertAvailableTime = ({ teacher, dayOfWeek, start, end }) =>
-  validateInterval(start, end, dayOfWeek)
-    .chain(() => validateIntervalData({ teacher, dayOfWeek, start, end }))
-    .chain(() => validateIntervalUniqueness(teacher, dayOfWeek, start, end))
-    .chain(() => makeCb(knex('teacherAvailability').insert({ teacher, dayOfWeek, start, end })))
+  validateIntervalData({ teacher, dayOfWeek, start, end })
+    .map(R.map(Number))
+    .chain(validateInterval)
+    .chain(validateIntervalUniqueness)
+    .chain(data => makeCb(knex('teacherAvailability').insert(data)))
     .map(() => {});

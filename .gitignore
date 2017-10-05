@@ -3,6 +3,7 @@ dist/
 distForReplace/
 coverage/
 build/
+doc/
 
 .idea
 .DS_Store

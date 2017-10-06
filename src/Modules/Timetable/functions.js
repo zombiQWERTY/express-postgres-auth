@@ -16,21 +16,23 @@ const validateIntervalUniquenessQuery = `
   )
 `;
 
-const isEndGTStart = (start, end) => start < end;
-const is24Deal = value => value >= 0 && value < 24;
-const isDayOfWeek = value => value > 0 && value <= 7;
+const toInt = value => parseInt(value, 10);
+const isInRange = (x, range) => x >= range[0] && x <= range[1];
+
+const isValidRange = (start, end, range = [0, 23]) =>
+  isInRange(start, range) && isInRange(end, range);
 
 const validateIntervalRules = () =>
   makeRules({
     teacher: ['required', 'integer'],
-    start: ['required', 'integer', 'greaterThan:0', 'lessThan:24'],
     end: ['required', 'integer', 'greaterThan:0', 'lessThan:24'],
+    start: ['required', 'integer', 'greaterThan:0', 'lessThan:24'],
     dayOfWeek: ['required', 'integer', 'greaterThan:0', 'lessThan:8']
   });
 
 const validateIntervalData = runValidator(validateIntervalRules());
 const validateInterval = ({ start, end, dayOfWeek, teacher }) =>
-  isEndGTStart(start, end) && is24Deal(start) && is24Deal(end) && isDayOfWeek(dayOfWeek)
+  start < end && isValidRange(start, end) && isInRange(dayOfWeek, [1, 7])
     ? Future.of({ start, end, dayOfWeek, teacher })
     : Future.reject(new ValidationError({
         interval: ['Invalid interval.']
@@ -57,10 +59,10 @@ const getIntervalsForTeachers = teachers =>
 
 export const insertAvailableTime = ({ teacher, dayOfWeek, start, end }) =>
   validateIntervalData({ teacher, dayOfWeek, start, end })
-    .map(R.map(parseInt(R.__, 10)))
+    .map(R.map(toInt))
     .chain(validateInterval)
     .chain(validateIntervalUniqueness)
-    .chain(data => makeCb(knex('teacherAvailability').insert, data))
+    .chain(data => makeCb(knex('teacherAvailability').insert(data)))
     .map(() => {});
 
 export const getTimetable = ({ language, level, lessonsType }) =>
@@ -72,6 +74,6 @@ export const getTimetable = ({ language, level, lessonsType }) =>
         const intervals = yield getIntervalsForTeachers(R.map(R.prop('id'), cards));
         return { cards, intervals };
       } else {
-        return { cards };
+        return { cards: [], intervals: [] };
       }
     });

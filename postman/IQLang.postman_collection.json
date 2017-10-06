@@ -34,7 +34,7 @@
 								},
 								{
 									"key": "email",
-									"value": "test@test.com",
+									"value": "teacher@test.com",
 									"type": "text"
 								},
 								{
@@ -88,7 +88,7 @@
 								},
 								{
 									"key": "email",
-									"value": "test@test.com",
+									"value": "student@test.com",
 									"type": "text"
 								},
 								{
@@ -147,7 +147,7 @@
 							"urlencoded": [
 								{
 									"key": "refreshToken",
-									"value": "{{refreshToken}}",
+									"value": "{{tokenScheme}} {{refreshToken}}",
 									"description": "",
 									"type": "text"
 								}
@@ -158,7 +158,43 @@
 					"response": []
 				},
 				{
-					"name": "Authorize",
+					"name": "Authorize student",
+					"request": {
+						"url": "{{host}}/api/token/student",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accept-version",
+								"value": "{{apiVersion}}",
+								"description": ""
+							},
+							{
+								"key": "X-Request-ID",
+								"value": "{{clientId}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "student@test.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123123",
+									"type": "text"
+								}
+							]
+						},
+						"description": "Provides a pair of tokens and userinfo"
+					},
+					"response": []
+				},
+				{
+					"name": "Authorize teacher",
 					"request": {
 						"url": "{{host}}/api/token/teacher",
 						"method": "PUT",
@@ -179,7 +215,7 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "test@test.com",
+									"value": "teacher@test.com",
 									"type": "text"
 								},
 								{
@@ -212,7 +248,7 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
+								"value": "{{tokenScheme}} {{token}}",
 								"description": ""
 							}
 						],
@@ -233,6 +269,48 @@
 								{
 									"key": "end",
 									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Find available teachers with their free time",
+					"request": {
+						"url": "{{host}}/api/timetable/teacher/find",
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept-version",
+								"value": "{{apiVersion}}",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "{{tokenScheme}} {{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "language",
+									"value": "2",
+									"type": "text",
+									"warning": ""
+								},
+								{
+									"key": "level",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "lessonsType",
+									"value": "all",
 									"type": "text"
 								}
 							]

@@ -7,6 +7,7 @@ exports.up = function(knex, Promise) {
       table.integer('teacher').notNullable();
       table.integer('languageCEFR').notNullable();
       table.integer('difficultyLevel').notNullable();
+      table.boolean('canTeach').defaultTo(false).notNullable();
     });
 };
 

@@ -22,6 +22,7 @@ exports.up = function(knex, Promise) {
       table.string('firstName').notNullable();
 
       table.integer('UTCOffset').notNullable();
+      table.integer('fluentLanguage').notNullable();
 
       // Админ или супервайзер заполняет какого типа уроки может вести учитель (групповые, индивидуальные, и те, и те)
       table.enum('lessonsType', R.append('all', R.keys(lessonTypes.toJSON())));

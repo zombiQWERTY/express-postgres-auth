@@ -61,20 +61,48 @@ const saveTeacher = payload => {
   const saveTeacherLevel = t => resp => // Third
     knex('teacherLevelLanguageCEFRJunction')
       .transacting(t)
-      .insert({
-        languageCEFR: 1,
-        teacher: resp[0],
-        difficultyLevel: 1
-      });
+      .insert([
+        {
+          canTeach: true,
+          languageCEFR: 2,
+          teacher: resp[0],
+          difficultyLevel: 1
+        },
+        {
+          canTeach: true,
+          languageCEFR: 2,
+          teacher: resp[0],
+          difficultyLevel: 2
+        },
+        {
+          canTeach: true,
+          languageCEFR: 2,
+          teacher: resp[0],
+          difficultyLevel: 3
+        },
+        {
+          canTeach: true,
+          languageCEFR: 1,
+          teacher: resp[0],
+          difficultyLevel: 6
+        }
+      ]);
 
   const saveTeacherCEFR = t => resp => // Second
     knex('teacherLanguageCEFRJunction')
       .transacting(t)
-      .insert({
-        CEFR: 6,
-        language: 2,
-        teacher: resp[0]
-      })
+      .insert([
+        {
+          CEFR: 7, // Fluent
+          language: 1, // Русский
+          teacher: resp[0]
+        },
+        {
+          CEFR: 6, // Proficiency
+          language: 2, // Английский
+          teacher: resp[0]
+        }
+      ])
       .returning('teacher')
       .tap(saveTeacherLevel(t));
 
@@ -89,11 +117,12 @@ export const createTeacher = data =>
 
     const { salt, hash } = yield generateSaltenHash(validData.password);
     const password = hash;
-    const accountLevel = teacherAccountLevel[0].value;
+    // const accountLevel = teacherAccountLevel[0].value;
+    const accountLevel = teacherAccountLevel[40].value;
     const timestamps = createTimestamps(moment.utc());
 
     const accountData = R.mergeAll([validData, timestamps, { salt, password, accountLevel }]);
     // yield makeCb(knex('teachers').insert(accountData));
-    yield saveTeacher(R.merge(accountData, { lessonsType: 'all' }));
+    yield saveTeacher(R.merge(accountData, { lessonsType: 'all', fluentLanguage: 1 }));
     return R.omit(['password', 'salt'], accountData);
   });

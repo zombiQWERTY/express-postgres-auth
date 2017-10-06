@@ -16,6 +16,12 @@ const validateIntervalUniquenessQuery = `
   )
 `;
 
+const getBusyLesson = `
+  lessons.end = "teacherAvailability".end AND 
+  lessons.start = "teacherAvailability".start AND 
+  lessons."dayOfWeek" = "teacherAvailability"."dayOfWeek"
+`;
+
 const toInt = value => parseInt(value, 10);
 const isInRange = (x, range) => x >= range[0] && x <= range[1];
 
@@ -50,12 +56,18 @@ const validateIntervalUniqueness = ({ teacher, dayOfWeek, start, end }) =>
 
 const getIntervalsForTeachers = teachers =>
   makeCb(knex('teacherAvailability')
-    .where('teacher', 'in', teachers)
+    .whereIn('teacherAvailability.teacher', teachers)
     .select('teacherAvailability.start',
       'teacherAvailability.end',
       'teacherAvailability.dayOfWeek',
-      'teacherAvailability.teacher'));
-// TODO: выбирать только те интервалы, в которых нет уроков
+      'teacherAvailability.teacher')
+    .whereNotExists(function() { // TODO: Проверить, работает ли условие whereNotExists
+      this
+        .select('*')
+        .from('lessons')
+        .whereIn('teacher', teachers)
+        .whereRaw(getBusyLesson);
+    }));
 
 export const insertAvailableTime = ({ teacher, dayOfWeek, start, end }) =>
   validateIntervalData({ teacher, dayOfWeek, start, end })

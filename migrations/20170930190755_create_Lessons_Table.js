@@ -11,9 +11,13 @@ exports.up = function(knex, Promise) {
       table.dateTime('createdAt');
       table.dateTime('updatedAt');
 
-      table.integer('difficultyLevel').notNullable();
+      table.integer('end').notNullable();
+      table.integer('start').notNullable();
+      table.integer('dayOfWeek').notNullable();
+
       table.integer('teacher').notNullable();
       table.integer('language').notNullable();
+      table.integer('difficultyLevel').notNullable();
 
       table.dateTime('startTime').notNullable();
       table.enum('type', R.keys(types.toJSON())).notNullable();

@@ -1,24 +1,24 @@
 import { knex, makeCb } from '../../db/index';
 import { teacherAccountLevel } from '../Cards/consts';
 
-const teachers = 'teachers';
-const teacherAvailability = 'teacherAvailability';
-const teacherLevelLanguageCEFR = 'teacherLanguageCEFRJunction';
-const teacherLevelLanguage = 'teacherLevelLanguageCEFRJunction';
+const getTeachersByLessonsType = lessonsType =>
+  knex('teachers')
+    .where({ lessonsType, accountLevel: teacherAccountLevel[40].value })
+    .select('teachers.id', 'teachers.firstName', 'teachers.familyName', 'teachers.fluentLanguage');
+
+const checkIfTeacherHasTimetable = () =>
+  knex()
+    .select('id')
+    .from('teacherAvailability')
+    .whereRaw('teachers.id = "teacherAvailability".teacher');
 
 export const getTeachersByLanguageLevelLessonsType = ({ language, level, lessonsType }) =>
-  makeCb(knex(teachers)
-    .where({ lessonsType, accountLevel: teacherAccountLevel[40].value })
-    .select(`${teachers}.id`, `${teachers}.firstName`, `${teachers}.familyName`, `${teachers}.fluentLanguage`)
+  makeCb(getTeachersByLessonsType(lessonsType)
+    .leftJoin('teacherLevelLanguageCEFRJunction', 'teachers.id', 'teacherLevelLanguageCEFRJunction.teacher')
+    .where('teacherLevelLanguageCEFRJunction.difficultyLevel', level)
+    .where('teacherLevelLanguageCEFRJunction.canTeach', true)
 
-    .leftJoin(teacherLevelLanguage, `${teachers}.id`, `${teacherLevelLanguage}.teacher`)
-    .where(`${teacherLevelLanguage}.difficultyLevel`, level)
-    .where(`${teacherLevelLanguage}.canTeach`, true)
-
-    .leftJoin(teacherLevelLanguageCEFR, `${teacherLevelLanguageCEFR}.id`, `${teacherLevelLanguage}.languageCEFR`)
-    .where(`${teacherLevelLanguageCEFR}.language`, language)
-
-    .whereExists(knex().select('*')
-      .from('teacherAvailability')
-      .whereRaw('teachers.id = "teacherAvailability".teacher')));
+    .leftJoin('teacherLanguageCEFRJunction', 'teacherLanguageCEFRJunction.id', 'teacherLevelLanguageCEFRJunction.languageCEFR')
+    .where('teacherLanguageCEFRJunction.language', language)
+    .whereExists(checkIfTeacherHasTimetable()));
   // TODO: add rating, avatar

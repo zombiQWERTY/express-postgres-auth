@@ -52,21 +52,33 @@ export const createStudent = data =>
 
 // TODO: remove this after MVP showing
 const saveTeacher = payload => {
-  const saveNewTeacher = t => knex('teachers')
-    .transacting(t)
-    .insert(payload)
-    .returning('id');
+  const saveNewTeacher = t =>
+    knex('teachers') // First
+      .transacting(t)
+      .insert(payload)
+      .returning('id');
 
-  const saveTeacherLevel = t => resp =>
-    knex('teacherLevelLanguageJunction')
+  const saveTeacherLevel = t => resp => // Third
+    knex('teacherLevelLanguageCEFRJunction')
       .transacting(t)
       .insert({
+        languageCEFR: 1,
         teacher: resp[0],
-        language: 2,
         difficultyLevel: 1
       });
 
-  const doTransaction = () => knex().transaction(t => saveNewTeacher(t).tap(saveTeacherLevel(t)));
+  const saveTeacherCEFR = t => resp => // Second
+    knex('teacherLanguageCEFRJunction')
+      .transacting(t)
+      .insert({
+        CEFR: 6,
+        language: 2,
+        teacher: resp[0]
+      })
+      .returning('teacher')
+      .tap(saveTeacherLevel(t));
+
+  const doTransaction = () => knex().transaction(t => saveNewTeacher(t).tap(saveTeacherCEFR(t)));
   return makeCb(doTransaction());
 };
 
@@ -82,6 +94,6 @@ export const createTeacher = data =>
 
     const accountData = R.mergeAll([validData, timestamps, { salt, password, accountLevel }]);
     // yield makeCb(knex('teachers').insert(accountData));
-    yield saveTeacher(accountData);
+    yield saveTeacher(R.merge(accountData, { lessonsType: 'all' }));
     return R.omit(['password', 'salt'], accountData);
   });

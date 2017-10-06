@@ -1,6 +1,7 @@
 import R from 'ramda';
 import { pbkdf2 } from '../src/Modules/Hashes/consts';
 import { teacherAccountLevel } from '../src/Modules/Cards/consts';
+import { types as lessonTypes } from '../src/Modules/Lessons/consts.js';
 
 exports.up = function(knex, Promise) {
   return knex.schema
@@ -21,6 +22,10 @@ exports.up = function(knex, Promise) {
       table.string('firstName').notNullable();
 
       table.integer('UTCOffset').notNullable();
+
+      // Админ или супервайзер заполняет какого типа уроки может вести учитель (групповые, индивидуальные, и те, и те)
+      table.enum('lessonsType', R.append('all', R.keys(lessonTypes.toJSON())));
+
       table.enum('accountLevel', R.values(teacherAccountLevel.toJSON()));
     });
 };

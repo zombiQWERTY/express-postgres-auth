@@ -17,9 +17,22 @@ export const authenticate = () => (req, res, next) =>
     }
   })(req, res, next);
 
+// TODO: Remove and investigate a roles system after MVP
 export const onlyTeacherStub = () => (req, res, next) => {
   if (req.user) {
     if (req.user.role !== 'teacher') {
+      return next(new AuthenticationError('Access denied.'));
+    } else {
+      return next();
+    }
+  } else {
+    return next(new AuthenticationError('Access denied.'));
+  }
+};
+
+export const onlyStudentStub = () => (req, res, next) => {
+  if (req.user) {
+    if (req.user.role !== 'student') {
       return next(new AuthenticationError('Access denied.'));
     } else {
       return next();

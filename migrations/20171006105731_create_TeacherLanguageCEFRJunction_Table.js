@@ -1,16 +1,16 @@
 exports.up = function(knex, Promise) {
   return knex
     .schema
-    .createTableIfNotExists('teacherLevelLanguageJunction', function(table) {
+    .createTableIfNotExists('teacherLanguageCEFRJunction', function(table) {
       table.increments('id').primary();
 
-      table.integer('difficultyLevel').notNullable();
-      table.integer('language').notNullable();
+      table.integer('CEFR').notNullable();
       table.integer('teacher').notNullable();
+      table.integer('language').notNullable();
     });
 };
 
 exports.down = function(knex, Promise) {
   return knex.schema
-    .dropTable('teacherLevelLanguageJunction');
+    .dropTable('teacherLanguageCEFRJunction');
 };

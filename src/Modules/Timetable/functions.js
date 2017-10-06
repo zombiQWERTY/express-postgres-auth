@@ -3,6 +3,7 @@ import Future from 'fluture';
 import { knex, makeCb } from '../../db/index';
 import { ValidationError } from '../../Helpers/Errors/classes';
 import { makeRules, runValidator } from '../../Helpers/CheckIt/functions';
+import { getTeachersByLanguageLevelLessonsType } from '../Cards/functions';
 
 const validateIntervalUniquenessQuery = `
   "teacher"   = :teacher   AND 
@@ -52,3 +53,11 @@ export const insertAvailableTime = ({ teacher, dayOfWeek, start, end }) =>
     .chain(validateIntervalUniqueness)
     .chain(data => makeCb(knex('teacherAvailability').insert, data))
     .map(() => {});
+
+export const getTimetable = ({ language, level, lessonsType }) =>
+  Future
+    .do(function * () {
+      const cards = yield getTeachersByLanguageLevelLessonsType({ language, level, lessonsType });
+
+      return { cards };
+    });

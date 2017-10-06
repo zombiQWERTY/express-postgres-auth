@@ -1,4 +1,4 @@
-import { getTeacherByLanguageLevelLessonsType } from '../../Modules/Cards/functions';
+import { getTimetable } from '../../Modules/Timetable/functions';
 
 /**
  * @api {post} /api/timetable/teacher/find Find teachers by rules timetable
@@ -13,7 +13,7 @@ import { getTeacherByLanguageLevelLessonsType } from '../../Modules/Cards/functi
  */
 
 const v1_0_0 = (req, res, next) =>
-  getTeacherByLanguageLevelLessonsType(req.body)
+  getTimetable(req.body)
     .fork(next, res.setRes);
 
 export const find = {

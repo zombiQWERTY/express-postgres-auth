@@ -1,6 +1,7 @@
 import R from 'ramda';
 import Future from 'fluture';
 import { knex, makeCb } from '../../db/index';
+import { getBusyLesson } from '../Lessons/functions';
 import { ValidationError } from '../../Helpers/Errors/classes';
 import { makeRules, runValidator } from '../../Helpers/CheckIt/functions';
 import { getTeachersByLanguageLevelLessonsType } from '../Cards/functions';
@@ -14,12 +15,6 @@ const validateIntervalUniquenessQuery = `
     (:start <= "start" AND :end >= "end") OR 
     (:start >= "start" AND :end <= "end") 
   )
-`;
-
-const getBusyLesson = `
-  lessons.end = "teacherAvailability".end AND 
-  lessons.start = "teacherAvailability".start AND 
-  lessons."dayOfWeek" = "teacherAvailability"."dayOfWeek"
 `;
 
 const toInt = value => parseInt(value, 10);
@@ -61,13 +56,8 @@ const getIntervalsForTeachers = teachers =>
       'teacherAvailability.end',
       'teacherAvailability.dayOfWeek',
       'teacherAvailability.teacher')
-    .whereNotExists(function() { // TODO: Проверить, работает ли условие whereNotExists
-      this
-        .select('*')
-        .from('lessons')
-        .whereIn('teacher', teachers)
-        .whereRaw(getBusyLesson);
-    }));
+    .whereNotExists(qb => qb.select('id').from('lessons')
+      .whereIn('teacher', teachers).whereRaw(getBusyLesson)));
 
 export const insertAvailableTime = ({ teacher, dayOfWeek, start, end }) =>
   validateIntervalData({ teacher, dayOfWeek, start, end })

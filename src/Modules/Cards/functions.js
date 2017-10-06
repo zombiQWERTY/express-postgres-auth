@@ -16,6 +16,5 @@ export const getTeachersByLanguageLevelLessonsType = ({ language, level, lessons
     .leftJoin(teacherLevelLanguageCEFR, `${teacherLevelLanguageCEFR}.id`, `${teacherLevelLanguage}.languageCEFR`)
     .where(`${teacherLevelLanguageCEFR}.language`, language));
 
+  // TODO: Выбирать тех учителей, у которых есть хотя бы один интервал
   // TODO: add rating, avatar
-  // TODO: выбирать только те интервалы, в которых нет уроков
-

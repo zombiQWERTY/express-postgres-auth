@@ -46,6 +46,15 @@ const validateIntervalUniqueness = ({ teacher, dayOfWeek, start, end }) =>
             interval: ['Entity with this day and time interval already exists.']
           })));
 
+const getIntervalsForTeachers = teachers =>
+  makeCb(knex('teacherAvailability')
+    .where('teacher', 'in', teachers)
+    .select('teacherAvailability.start',
+      'teacherAvailability.end',
+      'teacherAvailability.dayOfWeek',
+      'teacherAvailability.teacher'));
+// TODO: выбирать только те интервалы, в которых нет уроков
+
 export const insertAvailableTime = ({ teacher, dayOfWeek, start, end }) =>
   validateIntervalData({ teacher, dayOfWeek, start, end })
     .map(R.map(parseInt(R.__, 10)))
@@ -59,5 +68,10 @@ export const getTimetable = ({ language, level, lessonsType }) =>
     .do(function * () {
       const cards = yield getTeachersByLanguageLevelLessonsType({ language, level, lessonsType });
 
-      return { cards };
+      if (cards.length) {
+        const intervals = yield getIntervalsForTeachers(R.map(R.prop('id'), cards));
+        return { cards, intervals };
+      } else {
+        return { cards };
+      }
     });

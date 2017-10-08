@@ -67,14 +67,25 @@ export const insertAvailableTime = ({ teacher, dayOfWeek, start, end }) =>
     .chain(data => makeCb(knex('teacherAvailability').insert(data)))
     .map(() => {});
 
+const groupByProp = R.o(R.groupBy, R.prop);
+const normalizeCards = R.o(R.map(R.head), groupByProp('id'));
+
+const updatePath = R.curry((p, fn, obj) => R.assocPath(p, fn(R.path(p, obj)), obj));
+const getIntervalsAndNormalizeSignature = cardIDs =>
+  getIntervalsForTeachers(cardIDs)
+    .map(R.reduce((result, { teacher, start, end, dayOfWeek }) =>
+      R.reduce((result, hour) =>
+          updatePath([dayOfWeek, R.toString(hour)],
+            R.append(teacher), result), result, R.range(start, end + 1)), {}));
+
 export const getTimetable = ({ language, level, lessonsType }) =>
   Future
     .do(function * () {
       const cards = yield getTeachersByLanguageLevelLessonsType({ language, level, lessonsType });
 
       if (cards.length) {
-        const intervals = yield getIntervalsForTeachers(R.map(R.prop('id'), cards));
-        return { cards, intervals };
+        const intervals = yield getIntervalsAndNormalizeSignature(R.map(R.prop('id'), cards));
+        return { cards: normalizeCards(cards), intervals };
       } else {
         return { cards: [], intervals: [] };
       }

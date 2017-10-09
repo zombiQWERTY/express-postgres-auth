@@ -1,7 +1,7 @@
 import { generateTokenPair } from '../../Modules/Tokens/functions';
 
 /**
- * @api {put} /api/token/:role Generate tokens pair by email and password for role (teacher|student)
+ * @api {put} /api/token/:role Generate tokens pair by email and password
  * @apiName GeneratePair
  * @apiGroup Token
  *

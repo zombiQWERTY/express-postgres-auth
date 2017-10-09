@@ -1,2 +1,2 @@
-# IQLang
+# Express-postgres-auth
 

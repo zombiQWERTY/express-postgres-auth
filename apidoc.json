@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "API",
     "title": "IQLang",
-    "url" : "https://iqlang.com",
+    "url" : "https://express-postgres-auth.com",
     "sampleUrl": "http://localhost:3000",
     "header": {
         "title": "Documentation",

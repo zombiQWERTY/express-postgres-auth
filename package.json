@@ -1,5 +1,5 @@
 {
-  "name": "iqlang",
+  "name": "express-postgres-auth",
   "version": "1.0.0",
   "description": "IQ lang",
   "main": "./src/index.js",
@@ -9,11 +9,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Winni-/iqlang-backend"
+    "url": "https://github.com/Winni-/express-postgres-auth"
   },
   "keywords": [],
   "bugs": {
-    "url": "https://github.com/Winni-/iqlang-backend/issues",
+    "url": "https://github.com/Winni-/express-postgres-auth/issues",
     "email": "zombiqwerty@yandex.ru"
   },
   "author": {

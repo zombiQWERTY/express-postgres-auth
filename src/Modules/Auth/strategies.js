@@ -9,7 +9,7 @@ import { hashBySalt } from '../Hashes/functions';
 import { findModel } from '../Accounts/functions';
 import { AuthenticationError } from '../../Helpers/Errors/classes';
 
-const isValidTable = table => ['teachers', 'students'].includes(table);
+const isValidTable = table => ['users'].includes(table);
 
 const JWT = () => {
   const { config } = Store.get('config');

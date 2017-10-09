@@ -1,10 +1,8 @@
-import R from 'ramda';
 import { pbkdf2 } from '../src/Modules/Hashes/consts';
-import { studentAccountLevel } from '../src/Modules/Cards/consts';
 
 exports.up = function(knex, Promise) {
   return knex.schema
-    .createTable('students', function(table) {
+    .createTable('users', function(table) {
       table.increments('id').primary();
 
       table.dateTime('deletedAt');
@@ -19,13 +17,10 @@ exports.up = function(knex, Promise) {
 
       table.string('familyName');
       table.string('firstName').notNullable();
-
-      table.integer('UTCOffset').notNullable();
-      table.enum('accountLevel', R.values(studentAccountLevel.toJSON()));
     });
 };
 
 exports.down = function(knex, Promise) {
   return knex.schema
-    .dropTable('students');
+    .dropTable('users');
 };
